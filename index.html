@@ -69,6 +69,128 @@
   body.dark .toggle .slider { background: #4a5568; }
   body.dark .toggle input:checked + .slider { background: #4299e1; }
 
+  /* ===== STARK THEME — Tony Stark HUD ===== */
+  body.stark { background: #080e18; color: #c0e8ff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  body.stark::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(0,210,255,0.09) 1px, transparent 1px), linear-gradient(90deg, rgba(0,210,255,0.09) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+  body.stark > * { position: relative; z-index: 1; }
+
+  body.stark .header { background: linear-gradient(135deg, #0a1628, #0d2a45); border-bottom: 1px solid rgba(0,210,255,0.4); box-shadow: 0 2px 20px rgba(0,180,255,0.15); }
+  body.stark .header h1 { color: #00efff; text-shadow: 0 0 10px rgba(0,210,255,0.5); }
+  body.stark .header .subtitle { color: rgba(0,210,255,0.6); }
+  body.stark .theme-btn { background: rgba(0,210,255,0.1); border: 1px solid rgba(0,210,255,0.4); color: #00efff; }
+  body.stark .theme-btn:hover { background: rgba(0,210,255,0.25); box-shadow: 0 0 12px rgba(0,210,255,0.3); }
+
+  body.stark .input-panel, body.stark .summary-bar, body.stark .card { background: rgba(10,22,40,0.9); border: 1px solid rgba(0,210,255,0.3); box-shadow: 0 0 15px rgba(0,180,255,0.08); }
+  body.stark .input-panel h2 { color: #00efff; text-shadow: 0 0 6px rgba(0,210,255,0.3); }
+  body.stark select { background: #0d2a45; color: #c0e8ff; border: 1px solid rgba(0,210,255,0.4); }
+  body.stark select option { background: #0d2a45; color: #c0e8ff; }
+  body.stark .marca-select { background: #0d2a45; color: #c0e8ff; border: 2px solid rgba(0,210,255,0.4); }
+  body.stark .marca-select option { background: #0d2a45; color: #c0e8ff; }
+  body.stark #nuevaCajaPanel h3 { color: #00efff; }
+  body.stark #planoPanel h3 { color: #00efff; }
+  body.stark .input-group label { color: #50b8d6; font-size: 11px; letter-spacing: 1.5px; }
+  body.stark .input-group input { background: rgba(0,210,255,0.08); border: 1px solid rgba(0,210,255,0.35); color: #c0e8ff; box-shadow: inset 0 0 8px rgba(0,180,255,0.1); }
+  body.stark .input-group input:focus { border-color: #00efff; box-shadow: 0 0 12px rgba(0,210,255,0.3), inset 0 0 8px rgba(0,180,255,0.15); }
+  body.stark .input-group input::placeholder { color: rgba(0,210,255,0.35); }
+  body.stark .note { color: rgba(0,210,255,0.4); }
+  body.stark .note strong { color: rgba(0,210,255,0.6); }
+
+  body.stark .toggle-group label { color: #50b8d6; }
+  body.stark .toggle .slider { background: #0d2a45; border: 1px solid rgba(0,210,255,0.3); }
+  body.stark .toggle input:checked + .slider { background: rgba(0,210,255,0.3); border-color: #00efff; box-shadow: 0 0 8px rgba(0,210,255,0.4); }
+
+  body.stark .btn-search { background: linear-gradient(135deg, #145080, #2090c0); border: 1px solid rgba(0,210,255,0.5); box-shadow: 0 0 10px rgba(0,180,255,0.2); }
+  body.stark .btn-search:hover { background: linear-gradient(135deg, #1a6090, #28a0d0); box-shadow: 0 0 18px rgba(0,210,255,0.4); }
+  body.stark .btn-nueva { background: linear-gradient(135deg, #145080, #1a7090); border: 1px solid rgba(0,210,255,0.5); }
+  body.stark .btn-nueva:hover { background: linear-gradient(135deg, #1a6090, #2090a0); box-shadow: 0 0 18px rgba(0,210,255,0.4); }
+  body.stark .btn-calcular { background: linear-gradient(135deg, #145080, #1a7090); border: 1px solid rgba(0,210,255,0.5); }
+  body.stark .btn-calcular:hover { box-shadow: 0 0 18px rgba(0,210,255,0.4); }
+  body.stark .btn-plano, body.stark .btn-plano-calc { background: rgba(0,210,255,0.15); color: #00efff; border: 1px solid rgba(0,210,255,0.4); }
+  body.stark .btn-plano:hover, body.stark .btn-plano-calc:hover { background: rgba(0,210,255,0.25); box-shadow: 0 0 12px rgba(0,210,255,0.3); }
+  body.stark .btn-download-svg { background: rgba(0,210,255,0.15); color: #00efff; border: 1px solid rgba(0,210,255,0.3); }
+  body.stark .btn-download-svg:hover { background: rgba(0,210,255,0.25); box-shadow: 0 0 10px rgba(0,210,255,0.3); }
+
+  body.stark .card { border: 1px solid rgba(0,210,255,0.25); transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s; }
+  body.stark .card:hover { border-color: rgba(0,210,255,0.6); box-shadow: 0 0 20px rgba(0,180,255,0.15), 0 4px 15px rgba(0,0,0,0.3); }
+  body.stark .card-name { color: #00efff; }
+  body.stark .card-dims { color: #50b8d6; }
+  body.stark .card-units .number { color: #00ff88; text-shadow: 0 0 8px rgba(0,255,136,0.3); }
+  body.stark .card-units .label { color: rgba(0,210,255,0.5); }
+  body.stark .card-stats { border-color: rgba(0,210,255,0.2); }
+  body.stark .stat { border-color: rgba(0,210,255,0.2); }
+  body.stark .stat-label { color: rgba(0,210,255,0.45); }
+  body.stark .stat-good { color: #00ff88; text-shadow: 0 0 6px rgba(0,255,136,0.3); }
+  body.stark .stat-ok { color: #ffcc00; text-shadow: 0 0 6px rgba(255,204,0,0.3); }
+  body.stark .stat-bad { color: #ff4466; text-shadow: 0 0 6px rgba(255,68,102,0.3); }
+  body.stark .card-detail { background: rgba(10,22,40,0.95); border-color: rgba(0,210,255,0.2); }
+  body.stark .expand-hint { color: rgba(0,210,255,0.35); border-color: rgba(0,210,255,0.15); }
+  body.stark .distribution-info h4 { color: #50b8d6; }
+  body.stark .dist-table th { background: rgba(0,210,255,0.1); color: #00efff; }
+  body.stark .dist-table td { border-color: rgba(0,210,255,0.15); color: #a0d4e8; }
+  body.stark .diagram-inner { background: #0a1628; border: 1px solid rgba(0,210,255,0.3); }
+  body.stark .diagram-inner:hover { box-shadow: 0 0 12px rgba(0,210,255,0.2); }
+  body.stark .diagram-box h4 { color: #50b8d6; }
+  body.stark .suggestion-improve { background: rgba(0,210,255,0.08); border-color: #00efff; }
+  body.stark .suggestion-improve h4 { color: #00efff; }
+  body.stark .suggestion-improve div { color: #a0d4e8; }
+  body.stark .results-header h2 { color: #00efff; }
+  body.stark .summary-text { color: #50b8d6; }
+  body.stark .summary-count { color: #c0e8ff; }
+  body.stark .orient-tag { background: rgba(0,210,255,0.15); color: #00efff; border: 1px solid rgba(0,210,255,0.3); }
+  body.stark .no-results { color: rgba(0,210,255,0.4); }
+  body.stark .no-results h3 { color: #50b8d6; }
+  body.stark .modal-overlay { background: rgba(0,10,20,0.85); }
+  body.stark .modal-content { background: #0a1628; border: 1px solid rgba(0,210,255,0.4); box-shadow: 0 0 40px rgba(0,180,255,0.15); }
+  body.stark .modal-title { color: #00efff; }
+  body.stark .modal-close { color: #50b8d6; }
+  body.stark .card-detail .card-stats { background: rgba(10,22,40,0.95); }
+
+  /* Stark: scan line on cards */
+  @keyframes starkScan { 0% { top: -2px; } 100% { top: 100%; } }
+  body.stark .card::after { content: ''; position: absolute; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, rgba(0,210,255,0.4), transparent); animation: starkScan 4s linear infinite; pointer-events: none; z-index: 2; }
+
+  /* Stark: stat ripple rings */
+  @keyframes starkRipple { 0% { transform: scale(0.5); opacity: 0.6; } 100% { transform: scale(2.5); opacity: 0; } }
+  body.stark .stat { position: relative; overflow: hidden; }
+  body.stark .stat::before { content: ''; position: absolute; inset: 0; margin: auto; width: 30px; height: 30px; border: 1px solid rgba(0,210,255,0.2); border-radius: 50%; animation: starkRipple 4s ease-out infinite; pointer-events: none; }
+
+  /* Stark: header arc decorations */
+  @keyframes starkArc1 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes starkArc2 { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+  .stark-arcs { display: none; position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; }
+  body.stark .stark-arcs { display: block; }
+  .stark-arcs .arc { position: absolute; inset: 0; border: 2px solid transparent; border-radius: 50%; }
+  .stark-arcs .arc:nth-child(1) { border-top-color: rgba(0,210,255,0.6); animation: starkArc1 3s linear infinite; }
+  .stark-arcs .arc:nth-child(2) { inset: 4px; border-right-color: rgba(0,255,136,0.4); animation: starkArc2 5s linear infinite; }
+  .stark-arcs .arc:nth-child(3) { inset: 8px; border-bottom-color: rgba(0,210,255,0.3); animation: starkArc1 7s linear infinite; }
+
+  /* Stark: oscilloscope */
+  .stark-oscilloscope { display: none; margin: 12px 0; border: 1px solid rgba(0,210,255,0.25); border-radius: 6px; overflow: hidden; }
+  body.stark .stark-oscilloscope { display: block; }
+
+  /* Stark: data stream */
+  .stark-datastream { display: none; margin: 8px 0; padding: 8px 10px; background: rgba(0,210,255,0.05); border: 1px solid rgba(0,210,255,0.15); border-radius: 6px; font-family: 'Courier New', monospace; font-size: 10px; color: rgba(0,210,255,0.5); line-height: 1.6; }
+  body.stark .stark-datastream { display: block; }
+
+  /* Stark: spectrum analyzer */
+  .stark-spectrum { display: none; margin: 8px 0; border: 1px solid rgba(0,210,255,0.2); border-radius: 6px; overflow: hidden; }
+  body.stark .stark-spectrum { display: block; }
+
+  /* Stark: loading bars */
+  .stark-loading-bars { display: none; margin: 8px 0; padding: 8px 10px; }
+  body.stark .stark-loading-bars { display: block; }
+  .stark-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .stark-bar-label { font-family: 'Courier New', monospace; font-size: 9px; color: rgba(0,210,255,0.5); width: 28px; letter-spacing: 1px; }
+  .stark-bar-track { flex: 1; height: 6px; background: rgba(0,210,255,0.08); border-radius: 3px; overflow: hidden; }
+  .stark-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+  .stark-bar-fill.cpu { background: linear-gradient(90deg, #00efff, #00ff88); }
+  .stark-bar-fill.mem { background: linear-gradient(90deg, #00efff, #ffcc00); }
+  .stark-bar-fill.net { background: linear-gradient(90deg, #00efff, #ff4466); }
+
+  /* Stark: code ticker */
+  .stark-code-ticker { display: none; overflow: hidden; height: 42px; padding: 4px 12px; font-family: 'Courier New', monospace; font-size: 11px; color: rgba(0,210,255,0.4); background: rgba(0,10,20,0.5); border-bottom: 1px solid rgba(0,210,255,0.15); line-height: 1.4; }
+  body.stark .stark-code-ticker { display: block; }
+
   .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
 
   .input-panel { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 6px rgba(0,0,0,0.08); margin-bottom: 24px; }
@@ -218,8 +340,9 @@
 </head>
 <body>
 
-<div class="header">
-  <div>
+<div class="header" style="position:relative;">
+  <div class="stark-arcs"><div class="arc"></div><div class="arc"></div><div class="arc"></div></div>
+  <div style="margin-left:0;">
     <h1 id="mainTitle">&#128230; Calculadora de Cajas Corrugadas</h1>
     <div class="subtitle" id="mainSubtitle">Ingresa las dimensiones del producto para encontrar la caja ideal</div>
   </div>
@@ -228,6 +351,7 @@
     <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">Modo oscuro</button>
   </div>
 </div>
+<div class="stark-code-ticker" id="starkTicker"></div>
 
 <div class="container">
   <div class="input-panel">
@@ -276,6 +400,22 @@
       <strong>Filtro:</strong> solo se muestran cajas con desperdicio &#8804; 20%.
     </div>
   </div>
+
+  <!-- Stark HUD: Oscilloscope + Loading Bars -->
+  <div class="stark-oscilloscope"><canvas id="starkOscCanvas" width="400" height="60"></canvas></div>
+  <div class="stark-loading-bars">
+    <div class="stark-bar-row"><span class="stark-bar-label">CPU</span><div class="stark-bar-track"><div class="stark-bar-fill cpu" id="starkCpu" style="width:45%"></div></div></div>
+    <div class="stark-bar-row"><span class="stark-bar-label">MEM</span><div class="stark-bar-track"><div class="stark-bar-fill mem" id="starkMem" style="width:62%"></div></div></div>
+    <div class="stark-bar-row"><span class="stark-bar-label">NET</span><div class="stark-bar-track"><div class="stark-bar-fill net" id="starkNet" style="width:30%"></div></div></div>
+  </div>
+
+  <!-- Stark HUD: Data Stream + Spectrum -->
+  <div class="stark-datastream" id="starkStream">
+    <div>0x4F2A :: 14:32:07.441 :: SYNC OK</div>
+    <div>0xB8C1 :: 14:32:07.892 :: BUFFER READY</div>
+    <div>0x31FF :: 14:32:08.103 :: CALC IDLE</div>
+  </div>
+  <div class="stark-spectrum"><canvas id="starkSpecCanvas" width="400" height="40"></canvas></div>
 
   <div id="nuevaCajaPanel" class="input-panel" style="display:none; margin-top:20px;">
     <h3 style="margin:0 0 12px; color:#8b7a3e; font-size:16px; font-weight:700; text-transform:uppercase;" id="ncTitle">Crear caja</h3>
@@ -1303,16 +1443,202 @@ function downloadJPG(btn, filename) {
   });
 }
 
+var currentTheme = 'light';
 function toggleTheme() {
   var body = document.body;
   var btn = document.getElementById('themeBtn');
-  if (body.className.indexOf('dark') === -1) {
+  body.className = body.className.replace(' dark', '').replace(' stark', '');
+  if (currentTheme === 'light') {
+    currentTheme = 'dark';
     body.className += ' dark';
-    btn.textContent = T.lightMode;
+    btn.innerHTML = '&#9889; Stark';
+  } else if (currentTheme === 'dark') {
+    currentTheme = 'stark';
+    body.className += ' stark';
+    btn.innerHTML = '&#9728; ' + T.lightMode;
+    startStarkHUD();
   } else {
-    body.className = body.className.replace(' dark', '');
+    currentTheme = 'light';
     btn.textContent = T.darkMode;
+    stopStarkHUD();
   }
+}
+
+// ===== STARK HUD ENGINE =====
+var starkAnimIds = {};
+var starkIntervals = [];
+
+function startStarkHUD() {
+  startOscilloscope();
+  startSpectrum();
+  startDataStream();
+  startLoadingBars();
+  startCodeTicker();
+}
+
+function stopStarkHUD() {
+  if (starkAnimIds.osc) cancelAnimationFrame(starkAnimIds.osc);
+  if (starkAnimIds.spec) cancelAnimationFrame(starkAnimIds.spec);
+  starkIntervals.forEach(function(id) { clearInterval(id); clearTimeout(id); });
+  starkIntervals = [];
+  starkAnimIds = {};
+  var ticker = document.getElementById('starkTicker');
+  if (ticker) ticker.textContent = '';
+}
+
+function startOscilloscope() {
+  var canvas = document.getElementById('starkOscCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var w = canvas.width, h = canvas.height;
+  var phase = 0, amp = 0.6, freq = 3;
+  var targetAmp = 0.6, targetFreq = 3;
+  function draw() {
+    ctx.fillStyle = 'rgba(8,14,24,0.3)';
+    ctx.fillRect(0, 0, w, h);
+    // grid
+    ctx.strokeStyle = 'rgba(0,210,255,0.08)';
+    ctx.lineWidth = 0.5;
+    for (var gx = 0; gx < w; gx += 20) { ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,h); ctx.stroke(); }
+    for (var gy = 0; gy < h; gy += 15) { ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(w,gy); ctx.stroke(); }
+    // wave
+    amp += (targetAmp - amp) * 0.02;
+    freq += (targetFreq - freq) * 0.02;
+    ctx.beginPath();
+    ctx.strokeStyle = '#50ffff';
+    ctx.lineWidth = 1.5;
+    ctx.shadowColor = '#00efff';
+    ctx.shadowBlur = 6;
+    for (var x = 0; x < w; x++) {
+      var y = h/2 + Math.sin((x * freq / w) * Math.PI * 2 + phase) * (h/2 * amp);
+      y += Math.sin((x * freq * 2.3 / w) * Math.PI * 2 + phase * 1.7) * (h/6 * amp);
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    // green wave
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(0,255,136,0.4)';
+    ctx.lineWidth = 1;
+    for (var x2 = 0; x2 < w; x2++) {
+      var y2 = h/2 + Math.cos((x2 * freq * 0.7 / w) * Math.PI * 2 + phase * 0.6) * (h/3 * amp * 0.6);
+      if (x2 === 0) ctx.moveTo(x2, y2); else ctx.lineTo(x2, y2);
+    }
+    ctx.stroke();
+    phase += 0.04;
+    if (Math.random() < 0.01) { targetAmp = 0.2 + Math.random() * 0.8; targetFreq = 1 + Math.random() * 6; }
+    starkAnimIds.osc = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function startSpectrum() {
+  var canvas = document.getElementById('starkSpecCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var w = canvas.width, h = canvas.height;
+  var bars = 48;
+  var barW = w / bars;
+  var levels = [];
+  var targets = [];
+  for (var i = 0; i < bars; i++) { levels[i] = 0; targets[i] = 0; }
+  function draw() {
+    ctx.fillStyle = '#080e18';
+    ctx.fillRect(0, 0, w, h);
+    if (Math.random() < 0.08) {
+      for (var j = 0; j < bars; j++) {
+        var band = j / bars;
+        if (band < 0.15) targets[j] = 0.3 + Math.random() * 0.7;
+        else if (band < 0.5) targets[j] = 0.2 + Math.random() * 0.5;
+        else targets[j] = 0.05 + Math.random() * 0.3;
+      }
+    }
+    for (var k = 0; k < bars; k++) {
+      levels[k] += (targets[k] - levels[k]) * 0.12;
+      targets[k] *= 0.97;
+      var bh = levels[k] * h;
+      var grad = ctx.createLinearGradient(0, h - bh, 0, h);
+      grad.addColorStop(0, 'rgba(0,239,255,0.8)');
+      grad.addColorStop(1, 'rgba(0,180,255,0.3)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(k * barW + 1, h - bh, barW - 2, bh);
+    }
+    starkAnimIds.spec = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function startDataStream() {
+  var el = document.getElementById('starkStream');
+  if (!el) return;
+  var statuses = ['SYNC OK', 'BUFFER READY', 'CALC IDLE', 'TX COMPLETE', 'RX PENDING', 'ACK', 'STANDBY', 'POLLING', 'HASH VALID', 'CRC PASS'];
+  var id = setInterval(function() {
+    var hex = '0x' + Math.floor(Math.random() * 65535).toString(16).toUpperCase().padStart(4, '0');
+    var d = new Date();
+    var ts = d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0') + ':' + d.getSeconds().toString().padStart(2,'0') + '.' + d.getMilliseconds().toString().padStart(3,'0');
+    var status = statuses[Math.floor(Math.random() * statuses.length)];
+    var line = '<div>' + hex + ' :: ' + ts + ' :: ' + status + '</div>';
+    el.innerHTML = el.innerHTML + line;
+    var divs = el.querySelectorAll('div');
+    if (divs.length > 3) divs[0].remove();
+  }, 1200);
+  starkIntervals.push(id);
+}
+
+function startLoadingBars() {
+  var id = setInterval(function() {
+    var cpu = document.getElementById('starkCpu');
+    var mem = document.getElementById('starkMem');
+    var net = document.getElementById('starkNet');
+    if (cpu) cpu.style.width = (20 + Math.random() * 60) + '%';
+    if (mem) mem.style.width = (40 + Math.random() * 40) + '%';
+    if (net) net.style.width = (10 + Math.random() * 70) + '%';
+  }, 1500);
+  starkIntervals.push(id);
+}
+
+function startCodeTicker() {
+  var el = document.getElementById('starkTicker');
+  if (!el) return;
+  var lines = [
+    'import numpy as np',
+    'from boxcalc import optimize',
+    'dims = np.array([L, W, H])',
+    'result = optimize(dims, tol=0.02)',
+    'waste = 1 - result.efficiency',
+    'assert waste <= 0.20',
+    'print(f"Units: {result.count}")',
+    'layout = result.best_layout()',
+    'svg = layout.to_svg(scale=1.0)',
+    'export(svg, fmt="mm")',
+    'flaps = dims[1] / 2',
+    'panels = [L, W, L, W]',
+    'total_w = sum(panels)',
+    'cota_stroke = 0.5  # pt',
+    'rect_stroke = 1.0  # pt'
+  ];
+  var lineIdx = 0, charIdx = 0;
+  var currentLines = ['', '', ''];
+  function type() {
+    if (currentTheme !== 'stark') return;
+    var line = lines[lineIdx % lines.length];
+    if (charIdx <= line.length) {
+      currentLines[2] = '<span style="color:#00efff">&gt;</span> ' + line.substring(0, charIdx) + '<span style="opacity:0.6">|</span>';
+      el.innerHTML = currentLines.join('<br>');
+      charIdx++;
+      var delay = 20 + Math.random() * 80;
+      starkIntervals.push(setTimeout(type, delay));
+    } else {
+      currentLines[0] = currentLines[1];
+      currentLines[1] = '<span style="color:rgba(0,210,255,0.3)">&gt; ' + line + '</span>';
+      currentLines[2] = '';
+      el.innerHTML = currentLines.join('<br>');
+      lineIdx++;
+      charIdx = 0;
+      starkIntervals.push(setTimeout(type, 400 + Math.random() * 1200));
+    }
+  }
+  type();
 }
 
 // ===== i18n =====
@@ -1333,7 +1659,7 @@ var STRINGS = {
     frentes: 'Frentes', fondo: 'Fondo', pisos: 'Pisos',
     calcular: 'Calcular', generar: 'Generar',
     largoMm: 'Largo (mm)', anchoMm: 'Ancho (mm)', altoMm: 'Alto (mm)',
-    darkMode: 'Modo oscuro', lightMode: 'Modo claro',
+    darkMode: 'Modo oscuro', lightMode: 'Modo claro', starkMode: '&#9889; Stark',
     // Dynamic
     compatibles: 'Compatibles', conMod: 'Con modificaci\u00f3n',
     cajasCompat: 'Cajas compatibles', soloConMod: 'Solo con modificaci\u00f3n',
@@ -1380,7 +1706,7 @@ var STRINGS = {
     frentes: 'Front', fondo: 'Depth', pisos: 'Layers',
     calcular: 'Calculate', generar: 'Generate',
     largoMm: 'Length (mm)', anchoMm: 'Width (mm)', altoMm: 'Height (mm)',
-    darkMode: 'Dark mode', lightMode: 'Light mode',
+    darkMode: 'Dark mode', lightMode: 'Light mode', starkMode: '&#9889; Stark',
     compatibles: 'Compatible', conMod: 'With modification',
     cajasCompat: 'Compatible boxes', soloConMod: 'Modification only',
     noResults: 'No compatible boxes found',
@@ -1441,8 +1767,10 @@ function applyLang() {
   document.getElementById('planoLabelH').textContent = T.altoMm;
   document.getElementById('btnGenerar').textContent = T.generar;
   document.getElementById('langBtn').textContent = LANG === 'es' ? 'EN' : 'ES';
-  var isDark = document.body.className.indexOf('dark') !== -1;
-  document.getElementById('themeBtn').textContent = isDark ? T.lightMode : T.darkMode;
+  var tBtn = document.getElementById('themeBtn');
+  if (currentTheme === 'light') tBtn.textContent = T.darkMode;
+  else if (currentTheme === 'dark') tBtn.innerHTML = T.starkMode;
+  else tBtn.innerHTML = '&#9728; ' + T.lightMode;
 }
 
 function toggleLang() {
