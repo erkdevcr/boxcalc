@@ -1127,11 +1127,13 @@ function calcNuevaCaja() {
   if (!pisos || pisos < 1) pisos = 1;
 
   var total = frentes * fondo * pisos;
-  var cajaH = pisos * pH;
+
+  // Holgura: +2mm por producto en largo y ancho, +8mm total en alto
+  var cajaH = pisos * pH + 8;
 
   var options = [
-    { cajaL: frentes * pL, cajaW: fondo * pW, cajaH: cajaH, pl: pL, pw: pW },
-    { cajaL: frentes * pW, cajaW: fondo * pL, cajaH: cajaH, pl: pW, pw: pL }
+    { cajaL: frentes * (pL + 2), cajaW: fondo * (pW + 2), cajaH: cajaH, pl: pL, pw: pW },
+    { cajaL: frentes * (pW + 2), cajaW: fondo * (pL + 2), cajaH: cajaH, pl: pW, pw: pL }
   ];
 
   var isDuplicate = options[0].cajaL === options[1].cajaL && options[0].cajaW === options[1].cajaW;
