@@ -1223,8 +1223,8 @@ function buildTechnicalSVG(caja, fit) {
   var H = caja.h;   // alto
   var flapReal = Math.round(W / 2); // solapa = ancho/2
 
-  // Unfolded box: 4 panels side by side: L, W, L, W
-  var totalRealW = L + W + L + W;
+  // Unfolded box: 4 panels side by side: W, L, W, L
+  var totalRealW = W + L + W + L;
   var totalRealH = flapReal + H + flapReal;
 
   // Scale
@@ -1232,7 +1232,7 @@ function buildTechnicalSVG(caja, fit) {
   var maxDrawH = 550;
   var scale = Math.min(maxDrawW / totalRealW, maxDrawH / totalRealH, 2.0);
 
-  var panelWidths = [L * scale, W * scale, L * scale, W * scale];
+  var panelWidths = [W * scale, L * scale, W * scale, L * scale];
   var bodyH = H * scale;
   var flapH = flapReal * scale;
   var totalW = panelWidths[0] + panelWidths[1] + panelWidths[2] + panelWidths[3];
@@ -1295,7 +1295,7 @@ function buildTechnicalSVG(caja, fit) {
   var ry = marginTop;
 
   // Draw 4 panels × 3 rows of rectangles (1 pt stroke)
-  var panelLabels = [L, W, L, W];
+  var panelLabels = [W, L, W, L];
   var px = rx;
   for (var p = 0; p < 4; p++) {
     var pw = panelWidths[p];
