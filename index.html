@@ -59,7 +59,8 @@ body.dark{color-scheme:dark;--bg-app:#1a1c19;--bg-panel:#20231f;--bg-card:#26292
 .mod-hint{margin:8px 0 4px;font-size:11px;color:var(--text-secondary)}
 .mod-nofit{background:var(--bg-input);border-left:3px solid var(--accent-red);margin-top:12px}
 .delta-arrow{display:inline-block;width:.7em;height:.7em;margin-left:3px;vertical-align:baseline;flex:none}
-.dims-line .dv{display:inline-block;width:3.3em;text-align:left;white-space:nowrap}.dims-line .dx{display:inline-block;width:1.4em;text-align:center}
+.dims-line .dv{display:inline-block;width:3.3em;text-align:left;white-space:nowrap}.dims-line .dm{color:var(--text-secondary)!important;font-weight:400}
+.dims-line .dx{display:inline-block;width:1.4em;text-align:center;color:var(--text-secondary)!important;font-weight:400}
 .delta-val.up,.delta-arrow.up{color:var(--accent-green)}.delta-val.down,.delta-arrow.down{color:var(--accent-red)}
 .card[data-mod] .suggestion{border-left:0}
 /* Pallet workspace uses the host application's tokens and typography. */
@@ -520,7 +521,16 @@ const CAJAS_POR_MARCA = {
 
 let CAJAS = [];
 
+// En "Buscar caja" las dimensiones solo aparecen cuando ya hay una marca elegida
+function updateDimsVisibility() {
+  var d = document.getElementById('dimsSection');
+  if (!d) return;
+  var show = MODE === 'crear' || (MODE === 'buscar' && !!document.getElementById('marcaSelect').value);
+  d.style.display = show ? '' : 'none';
+}
+
 function onMarcaChange() {
+  updateDimsVisibility();
   const marca = document.getElementById('marcaSelect').value;
   const container = document.getElementById('results');
   const summaryBar = document.getElementById('summaryBar');
@@ -873,7 +883,7 @@ function modCardInner(idx) {
       <div>
         <div class="card-name">${caja.id}</div>
         <div class="card-dims dims-line"><span class="dv">${caja.l}</span><span class="dx">&times;</span><span class="dv">${caja.w}</span><span class="dx">&times;</span><span class="dv">${caja.h}</span> mm</div>
-        <div class="card-dims dims-line" style="color:#d69e2e; font-weight:600;">${deltaVal(modCaja.l, dl)}<span class="dx">&times;</span>${deltaVal(modCaja.w, dw)}<span class="dx">&times;</span>${deltaVal(modCaja.h, dh)} mm</div>
+        <div class="card-dims dims-line" style="color:#d69e2e; font-weight:600;">${deltaVal(modCaja.l, dl)}<span class="dx">&times;</span>${deltaVal(modCaja.w, dw)}<span class="dx">&times;</span>${deltaVal(modCaja.h, dh)}<span class="dm"> mm</span></div>
       </div>
       <div class="card-units">
         <div class="number" style="color:#d69e2e;">${units}</div>
@@ -1076,7 +1086,7 @@ function setMode(mode) {
   ['results','nuevaCajaResult','planoResult'].forEach(function(id){ document.getElementById(id).innerHTML = ''; });
   document.getElementById('summaryBar').style.display = 'none';
   show('brandSection', mode === 'buscar');                 // la marca solo se pide al buscar
-  show('dimsSection', mode === 'buscar' || mode === 'crear');
+  updateDimsVisibility();
   show('stackGroup', mode === 'buscar');
   document.getElementById('labelDims').textContent = T.dims;
   show('btnBuscarRun', mode === 'buscar');
