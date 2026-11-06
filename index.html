@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cálculo de Cajas y Pallets</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>📦</text></svg>">
 <style>
 /* Industrial workspace · warm paper / workshop ink */
@@ -63,6 +64,17 @@ body.dark{color-scheme:dark;--bg-app:#1a1c19;--bg-panel:#20231f;--bg-card:#26292
 .dims-line .dx{display:inline-block;width:1.4em;text-align:center;color:var(--text-secondary)!important;font-weight:400}
 .delta-val.up,.delta-arrow.up{color:var(--accent-green)}.delta-val.down,.delta-arrow.down{color:var(--accent-red)}
 .card[data-mod] .suggestion{border-left:0}
+.settings-card{width:min(520px,92vw);height:auto;max-height:92dvh;overflow:auto;gap:14px}
+.settings-title{font-size:18px;font-weight:700;margin:0;padding-right:44px}
+.settings-help,.settings-format{font-size:13px;color:var(--text-secondary);line-height:1.6;margin:0}
+.settings-format{font-size:12px}
+.settings-actions{display:flex;flex-wrap:wrap;gap:10px}
+.settings-status{min-height:20px;font-size:13px;line-height:1.5}
+.settings-status.ok{color:var(--accent-green)}.settings-status.err{color:var(--accent-red)}
+.settings-local{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;border-top:1px solid var(--border);font-size:12px;color:var(--text-secondary)}
+.settings-clear{min-height:36px;padding:0 12px;border:1px solid var(--border);background:transparent;color:var(--text-primary);border-radius:var(--radius);font-size:12px;font-weight:600}
+.settings-clear:hover{border-color:var(--accent-red);color:var(--accent-red)}
+.settings-clear[disabled]{opacity:.4;pointer-events:none}
 /* Pallet workspace uses the host application's tokens and typography. */
 #palletPanel{--blue:var(--accent-blue);--blue-dim:var(--soft-accent);--teal:var(--accent-green);--orange:var(--accent);--yellow:var(--accent-yellow);--red:var(--accent-red);--green:var(--accent-green);--text:var(--text-primary);--text2:var(--text-secondary);--text3:var(--text-secondary);--card:var(--bg-card);--radius:10px;--pallet-outer:#b0ada8;--pallet-inner:#e8e6e0;--box-a-fill:#e6c187;--box-a-stroke:#9d7434;--box-a-text:#362810;--box-b-fill:#b09264;--box-b-stroke:#785b30;--box-b-text:#201a11;--dim-text:var(--text-secondary);--margin-text:#342714}
 body.dark #palletPanel{--pallet-outer:#797a72;--pallet-inner:#333b37;--dim-text:var(--text-secondary)}
@@ -149,6 +161,7 @@ body.dark #palletPanel input[type=number],body.dark #palletPanel select{border-c
   <div class="header-tools">
     <button class="theme-btn" onclick="toggleLang()" id="langBtn" aria-label="Cambiar idioma / Change language" title="Cambiar idioma / Change language">EN</button>
     <button class="theme-btn icon-only" onclick="toggleTheme()" id="themeBtn" aria-label="Modo oscuro" title="Modo oscuro"></button>
+    <button class="theme-btn icon-only" onclick="openSettings()" id="settingsBtn" aria-label="Datos de cajas" title="Datos de cajas" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
   </div>
 </div>
 
@@ -431,6 +444,26 @@ body.dark #palletPanel input[type=number],body.dark #palletPanel select{border-c
 
   <div id="summaryBar" class="summary-bar" style="display:none;"></div>
   <div id="results"></div>
+</div>
+
+<!-- Settings: box data import / export -->
+<div class="modal-overlay" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" onclick="if(event.target===this)closeSettings()">
+  <div class="modal-content settings-card">
+    <button class="modal-close" id="settingsClose" aria-label="Cerrar / Close" onclick="closeSettings()">&times;</button>
+    <h2 class="settings-title" id="settingsTitle" data-es="Datos de cajas" data-en="Box data">Datos de cajas</h2>
+    <p class="settings-help" data-es="Exporta todas las cajas a un Excel (una hoja por marca) o importa un Excel para sumar cajas temporales. Las importadas se guardan solo en este navegador y se suman a las cajas ya incluidas." data-en="Export all boxes to an Excel file (one sheet per brand) or import an Excel file to add temporary boxes. Imported boxes are saved only in this browser and are added to the boxes already built in.">Exporta todas las cajas a un Excel (una hoja por marca) o importa un Excel para sumar cajas temporales. Las importadas se guardan solo en este navegador y se suman a las cajas ya incluidas.</p>
+    <div class="settings-actions">
+      <button type="button" class="btn-calcular" onclick="exportCajasExcel()" data-es="Exportar Excel" data-en="Export Excel">Exportar Excel</button>
+      <button type="button" class="btn-plano-calc" onclick="document.getElementById('importFile').click()" data-es="Importar Excel" data-en="Import Excel">Importar Excel</button>
+      <input type="file" id="importFile" accept=".xlsx,.xls" hidden onchange="importCajasExcel(this)">
+    </div>
+    <p class="settings-format" data-es="Formato: una hoja por marca (BioLand, Reserve, Terre de Vie, Seed, Nosara, Romeere). Primera fila: Caja, Largo, Ancho, Alto. Una caja por fila, medidas en mm." data-en="Format: one sheet per brand (BioLand, Reserve, Terre de Vie, Seed, Nosara, Romeere). First row: Caja, Largo, Ancho, Alto. One box per row, sizes in mm.">Formato: una hoja por marca (BioLand, Reserve, Terre de Vie, Seed, Nosara, Romeere). Primera fila: Caja, Largo, Ancho, Alto. Una caja por fila, medidas en mm.</p>
+    <div class="settings-status" id="settingsStatus" role="status" aria-live="polite"></div>
+    <div class="settings-local">
+      <span id="localCount"></span>
+      <button type="button" class="settings-clear" id="clearLocalBtn" onclick="clearLocalCajas()" data-es="Borrar cajas locales" data-en="Clear local boxes">Borrar cajas locales</button>
+    </div>
+  </div>
 </div>
 
 <!-- Modal for zoomed diagrams -->
@@ -2937,6 +2970,140 @@ document.querySelector('.mode-bar').addEventListener('keydown',e=>{const tabs=[.
   };
   var orig=window.applyLang;
   window.applyLang=function(){orig();translatePalletDOM();};
+})();
+
+// ===== Cajas locales: importar / exportar Excel =====
+(function(){
+  var KEY='cajasLocalV1';
+  var BASE=JSON.parse(JSON.stringify(CAJAS_POR_MARCA));
+  var SHEET={BioLand:'BioLand',Reserve:'Reserve',TerreDeVie:'Terre de Vie',Seed:'Seed',Nosara:'Nosara',Romeere:'Romeere'};
+  function norm(x){return String(x==null?'':x).toLowerCase().replace(/[^a-z0-9]/g,'');}
+  function normId(x){return String(x==null?'':x).trim().toLowerCase().replace(/\s+/g,' ');}
+  var brandByNorm={};Object.keys(CAJAS_POR_MARCA).forEach(function(k){brandByNorm[norm(k)]=k;brandByNorm[norm(SHEET[k]||k)]=k;});
+
+  function loadLocal(){try{var o=JSON.parse(localStorage.getItem(KEY)||'{}');return(o&&typeof o==='object')?o:{};}catch(e){return {};}}
+  function saveLocal(o){try{localStorage.setItem(KEY,JSON.stringify(o));return true;}catch(e){return false;}}
+  function countLocal(){var o=loadLocal(),n=0;Object.keys(o).forEach(function(b){n+=(o[b]||[]).length;});return n;}
+
+  function applyLocal(){
+    var local=loadLocal();
+    Object.keys(CAJAS_POR_MARCA).forEach(function(b){
+      var out=(BASE[b]||[]).map(function(c){return{id:c.id,l:c.l,w:c.w,h:c.h};});
+      (local[b]||[]).forEach(function(c){
+        var o={id:c.id,l:c.l,w:c.w,h:c.h,local:true};
+        var i=out.findIndex(function(x){return normId(x.id)===normId(c.id);});
+        if(i>=0)out[i]=o;else out.push(o);
+      });
+      var arr=CAJAS_POR_MARCA[b];arr.length=0;Array.prototype.push.apply(arr,out);
+    });
+  }
+
+  function status(msg,kind){var el=document.getElementById('settingsStatus');el.textContent=msg||'';el.className='settings-status'+(kind?' '+kind:'');}
+  function refreshCount(){
+    var n=countLocal();
+    document.getElementById('localCount').textContent=L('Cajas locales guardadas: ','Local boxes saved: ')+n;
+    document.getElementById('clearLocalBtn').disabled=n===0;
+  }
+  window.settingsLang=function(){
+    document.querySelectorAll('#settingsModal [data-es]').forEach(function(e){e.textContent=LANG==='en'?e.getAttribute('data-en'):e.getAttribute('data-es');});
+    var b=document.getElementById('settingsBtn');if(b){var t=L('Datos de cajas','Box data');b.setAttribute('aria-label',t);b.title=t;}
+    var c=document.getElementById('settingsClose');if(c)c.setAttribute('aria-label',L('Cerrar','Close'));
+    refreshCount();
+  };
+
+  var returnFocus=null;
+  window.openSettings=function(){
+    returnFocus=document.activeElement;status('');settingsLang();
+    document.getElementById('settingsModal').classList.add('active');
+    document.getElementById('settingsClose').focus();
+  };
+  window.closeSettings=function(){
+    document.getElementById('settingsModal').classList.remove('active');
+    if(returnFocus&&returnFocus.isConnected)returnFocus.focus({preventScroll:true});
+  };
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.getElementById('settingsModal').classList.contains('active'))closeSettings();});
+
+  function needXLSX(){if(window.XLSX)return true;status(L('No se pudo cargar la librería de Excel. Revisa tu conexión a internet e inténtalo de nuevo.','The Excel library could not be loaded. Check your internet connection and try again.'),'err');return false;}
+
+  window.exportCajasExcel=function(){
+    if(!needXLSX())return;
+    var wb=XLSX.utils.book_new(),total=0;
+    Object.keys(CAJAS_POR_MARCA).forEach(function(b){
+      var rows=[['Caja','Largo','Ancho','Alto']];
+      CAJAS_POR_MARCA[b].forEach(function(c){rows.push([c.id,c.l,c.w,c.h]);total++;});
+      var ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:18},{wch:9},{wch:9},{wch:9}];
+      XLSX.utils.book_append_sheet(wb,ws,SHEET[b]||b);
+    });
+    var d=new Date(),p=function(n){return String(n).padStart(2,'0');};
+    XLSX.writeFile(wb,'cajas_corrugadas_'+d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'.xlsx');
+    status(L('Exportadas '+total+' cajas.','Exported '+total+' boxes.'),'ok');
+  };
+
+  function num(v){if(typeof v==='number')return v;var n=parseFloat(String(v).replace(',','.'));return n;}
+  function findCol(head,names){for(var i=0;i<head.length;i++){var h=norm(head[i]);for(var j=0;j<names.length;j++){if(h===names[j]||h.indexOf(names[j])===0)return i;}}return -1;}
+
+  window.importCajasExcel=function(input){
+    var f=input.files&&input.files[0];input.value='';
+    if(!f)return;
+    if(!needXLSX())return;
+    var rd=new FileReader();
+    rd.onerror=function(){status(L('No se pudo leer el archivo.','The file could not be read.'),'err');};
+    rd.onload=function(ev){
+      try{
+        var wb=XLSX.read(ev.target.result,{type:'array'});
+        var local=loadLocal(),added=0,updated=0,skipped=0,ignoredSheets=[],found=0;
+        wb.SheetNames.forEach(function(sn){
+          var brand=brandByNorm[norm(sn)];
+          if(!brand){ignoredSheets.push(sn);return;}
+          found++;
+          var rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:''});
+          if(!rows.length)return;
+          var head=rows[0],ci=findCol(head,['caja','nombre','corrugado','box','name','id','codigo']),
+              cl=findCol(head,['largo','length','l']),cw=findCol(head,['ancho','width','w']),ch=findCol(head,['alto','height','h']),
+              cm=findCol(head,['medida']);
+          var hasHead=ci>=0||cl>=0||cw>=0||ch>=0||cm>=0;
+          if(ci<0)ci=0;
+          var split=(cl<0&&cw<0&&ch<0);   // formato "Corrugado | LxWxH"
+          if(!split){if(cl<0)cl=1;if(cw<0)cw=2;if(ch<0)ch=3;}
+          var list=local[brand]||(local[brand]=[]);
+          rows.slice(hasHead?1:0).forEach(function(r){
+            var id=String(r[ci]==null?'':r[ci]).trim();
+            if(!id&&!r.some(function(x){return String(x).trim()!=='';}))return;
+            var l,w,h;
+            if(split){
+              var src=r[cm>=0?cm:1],m=String(src).toLowerCase().replace(/mm/g,'').split(/[x×*]/).map(function(t){return num(t.trim());});
+              l=m[0];w=m[1];h=m[2];
+            }else{l=num(r[cl]);w=num(r[cw]);h=num(r[ch]);}
+            if(!id||!(l>0)||!(w>0)||!(h>0)){skipped++;return;}
+            var i=list.findIndex(function(x){return normId(x.id)===normId(id);});
+            var o={id:id,l:l,w:w,h:h};
+            if(i>=0){list[i]=o;updated++;}else{list.push(o);added++;}
+          });
+        });
+        if(!found){status(L('El archivo no tiene hojas con nombre de marca (BioLand, Reserve, Terre de Vie, Seed, Nosara, Romeere).','The file has no sheets named after a brand (BioLand, Reserve, Terre de Vie, Seed, Nosara, Romeere).'),'err');return;}
+        if(!saveLocal(local)){status(L('No se pudo guardar en este navegador (almacenamiento bloqueado o lleno).','Could not save in this browser (storage blocked or full).'),'err');return;}
+        applyLocal();onMarcaChange();refreshCount();
+        var msg=L('Importación lista: '+added+' nuevas, '+updated+' actualizadas','Import done: '+added+' new, '+updated+' updated');
+        if(skipped)msg+=L(' · '+skipped+' filas ignoradas (datos incompletos)',' · '+skipped+' rows ignored (incomplete data)');
+        if(ignoredSheets.length)msg+=L(' · hojas ignoradas: ',' · sheets ignored: ')+ignoredSheets.join(', ');
+        status(msg+'.',(added+updated)?'ok':'err');
+      }catch(e){status(L('El archivo no es un Excel válido.','The file is not a valid Excel file.'),'err');}
+    };
+    rd.readAsArrayBuffer(f);
+  };
+
+  window.clearLocalCajas=function(){
+    var n=countLocal();if(!n)return;
+    if(!confirm(L('¿Borrar las '+n+' cajas locales? Las cajas incluidas en la página no se tocan.','Delete the '+n+' local boxes? The boxes built into the page are not affected.')))return;
+    try{localStorage.removeItem(KEY);}catch(e){}
+    applyLocal();onMarcaChange();refreshCount();
+    status(L('Cajas locales borradas.','Local boxes cleared.'),'ok');
+  };
+
+  applyLocal();
+  var orig=window.applyLang;
+  window.applyLang=function(){orig();settingsLang();};
+  settingsLang();
 })();
 </script>
 </body>
