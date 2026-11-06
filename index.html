@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calculadora de Cajas Corrugadas</title>
+<title>Cálculo de Cajas y Pallets</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>📦</text></svg>">
 <style>
@@ -120,18 +120,21 @@ body.dark #palletPanel{--pallet-outer:#797a72;--pallet-inner:#333b37;--dim-text:
 /* Field boundaries retain the host's accessible contrast in both themes. */
 #palletPanel input[type=number],#palletPanel select{border-color:#8b8f82}
 body.dark #palletPanel input[type=number],body.dark #palletPanel select{border-color:#7b8472}
+.theme-btn.icon-only{width:44px;padding:0;display:inline-grid;place-items:center}
+.theme-btn.icon-only svg{width:20px;height:20px}
+@media(max-width:800px){.header{flex-wrap:nowrap;align-items:center;padding:16px 20px;gap:12px}.header-tools{margin-left:0}}
+@media(max-width:520px){.header{padding:14px 16px}.header h1{font-size:18px}.brand-lockup{align-items:center}}
 </style></head>
 <body>
 
 <div class="header" style="position:relative;">
   <div class="brand-lockup"><div class="brand-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="m16 3 12 6.5v13L16 29 4 22.5v-13L16 3Z"/><path d="m4 9.5 12 7 12-7M16 16.5V29M10 6.3l12 7v5"/></svg></div><div>
-    <h1 id="mainTitle">&#128230; Calculadora de Cajas Corrugadas</h1>
-    <div class="subtitle" id="mainSubtitle">Ingresa las dimensiones del producto para encontrar la caja ideal</div>
+    <h1 id="mainTitle">Cálculo de Cajas y Pallets</h1>
   </div>
   </div>
   <div class="header-tools">
-    <button class="theme-btn" onclick="toggleLang()" id="langBtn" aria-label="Cambiar idioma / Change language">EN</button>
-    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" aria-label="Cambiar tema / Change theme">Modo oscuro</button>
+    <button class="theme-btn" onclick="toggleLang()" id="langBtn" aria-label="Cambiar idioma / Change language" title="Cambiar idioma / Change language">EN</button>
+    <button class="theme-btn icon-only" onclick="toggleTheme()" id="themeBtn" aria-label="Modo oscuro" title="Modo oscuro"></button>
   </div>
 </div>
 
@@ -1447,14 +1450,25 @@ function toggleTheme() {
   currentTheme = currentTheme === 'light' ? 'dark' : 'light';
   document.body.classList.toggle('dark', currentTheme === 'dark');
   if(window.PalletCalc) PalletCalc.syncTheme();
-  document.getElementById('themeBtn').textContent = currentTheme === 'light' ? T.darkMode : T.lightMode;
+  updateThemeBtn();
 }
+var ICON_MOON = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+var ICON_SUN = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+function updateThemeBtn() {
+  var b = document.getElementById('themeBtn');
+  var dark = currentTheme === 'dark';
+  b.innerHTML = dark ? ICON_SUN : ICON_MOON;
+  var label = dark ? T.lightMode : T.darkMode;
+  b.setAttribute('aria-label', label);
+  b.title = label;
+}
+function L(es, en) { return LANG === 'en' ? en : es; }
 
 // ===== i18n =====
 var LANG = 'es';
 var STRINGS = {
   es: {
-    title: '&#128230; Calculadora de Cajas Corrugadas',
+    title: 'Cálculo de Cajas y Pallets',
     subtitle: 'Ingresa las dimensiones del producto para encontrar la caja ideal',
     marca: 'Marca',
     selectMarca: '-- Selecciona una marca --',
@@ -1503,7 +1517,7 @@ var STRINGS = {
     plano: 'PLANO', nueva: 'NUEVA'
   },
   en: {
-    title: '&#128230; Corrugated Box Calculator',
+    title: 'Box & Pallet Calculator',
     subtitle: 'Enter product dimensions to find the ideal box',
     marca: 'Brand',
     selectMarca: '-- Select a brand --',
@@ -1555,9 +1569,8 @@ var T = STRINGS[LANG];
 
 function applyLang() {
   T = STRINGS[LANG];
-  document.title = LANG === 'es' ? 'Calculadora de Cajas Corrugadas' : 'Corrugated Box Calculator';
+  document.title = LANG === 'es' ? 'Cálculo de Cajas y Pallets' : 'Box & Pallet Calculator';
   document.getElementById('mainTitle').innerHTML = T.title;
-  document.getElementById('mainSubtitle').textContent = T.subtitle;
   document.getElementById('labelMarca').textContent = T.marca;
   document.getElementById('optSelectMarca').textContent = T.selectMarca;
   document.getElementById('labelDims').textContent = T.dims;
@@ -1583,9 +1596,7 @@ function applyLang() {
   document.getElementById('planoLabelH').textContent = T.altoMm;
   document.getElementById('btnGenerar').textContent = T.generar;
   document.getElementById('langBtn').textContent = LANG === 'es' ? 'EN' : 'ES';
-  var tBtn = document.getElementById('themeBtn');
-  if (currentTheme === 'light') tBtn.textContent = T.darkMode;
-  else tBtn.textContent = T.lightMode;
+  updateThemeBtn();
 }
 
 function toggleLang() {
@@ -1596,6 +1607,7 @@ function toggleLang() {
   document.getElementById('planoResult').innerHTML = '';
   document.getElementById('results').innerHTML = '';
   document.getElementById('summaryBar').style.display = 'none';
+  if (window.PalletCalc && PalletCalc.relang) PalletCalc.relang();
 }
 </script>
 
@@ -1611,6 +1623,7 @@ function toggleLang() {
     else if(returnFocus&&returnFocus.isConnected){returnFocus.focus({preventScroll:true});returnFocus=null;}
   }).observe(dialog,{attributes:true,attributeFilter:['class']});
   dialog.addEventListener('keydown',function(e){if(e.key==='Tab'){e.preventDefault();dialog.querySelector('.modal-close').focus();}});
+  window.applyLang();
   setMode('buscar');
   // Match pointer affordances with keyboard activation without changing card logic.
   var results=document.getElementById('results');
@@ -1688,6 +1701,23 @@ function switchTab(id) {
 }
 
 // ===== CALCULATION ENGINE =====
+let warnState = null;
+function updateWarn() {
+  const warn = document.getElementById('palletLayersWarning');
+  if (!warn || !warnState) return;
+  const { totalHeight, maxH, isManual } = warnState;
+  if (totalHeight > maxH) {
+    warn.style.color = 'var(--red)';
+    warn.textContent = L(`Atención: ${(totalHeight/10).toFixed(1)} cm supera el máximo de ${(maxH/10).toFixed(1)} cm`, `Warning: ${(totalHeight/10).toFixed(1)} cm exceeds the maximum of ${(maxH/10).toFixed(1)} cm`);
+  } else if (isManual) {
+    warn.style.color = 'var(--green)';
+    warn.textContent = L(`Altura total: ${(totalHeight/10).toFixed(1)} cm — dentro del límite`, `Total height: ${(totalHeight/10).toFixed(1)} cm — within the limit`);
+  } else { warn.textContent = ''; }
+}
+function patName(n) {
+  if (LANG !== 'en') return n;
+  return n.replace('Todas corto×largo','All short×long').replace('Todas largo×corto','All long×short').replace(/^Mixto:/,'Mixed:');
+}
 function calculate() {
   // ALWAYS clean previous state
   destroy3D();
@@ -1697,7 +1727,7 @@ function calculate() {
   let BW = +document.getElementById('palletBoxW').value;
   let BH = +document.getElementById('palletBoxH').value;
 
-  if (!BL || !BW || !BH) { alert('Ingresá las 3 dimensiones de la caja.'); return; }
+  if (!BL || !BW || !BH) { alert(L('Ingresá las 3 dimensiones de la caja.','Enter all 3 box dimensions.')); return; }
   if (BL > 1000) { BL = 1000; document.getElementById('palletBoxL').value = 1000; }
   if (BW > 1000) { BW = 1000; document.getElementById('palletBoxW').value = 1000; }
   if (BH > 1000) { BH = 1000; document.getElementById('palletBoxH').value = 1000; }
@@ -1709,12 +1739,12 @@ function calculate() {
   const maxH = (+document.getElementById('palletMaxHeight').value || +document.getElementById('palletMaxHeight').placeholder) * 10;
   const boxWt = +document.getElementById('palletBoxWeight').value || null;
 
-  if (!PL || !PW || !maxH) { alert('Ingresá las dimensiones del pallet y altura máxima.'); return; }
+  if (!PL || !PW || !maxH) { alert(L('Ingresá las dimensiones del pallet y altura máxima.','Enter the pallet dimensions and maximum height.')); return; }
 
   const longSide = Math.max(BL, BW);
   const shortSide = Math.min(BL, BW);
 
-  if (shortSide > PL && shortSide > PW) { alert('La caja no cabe en el pallet.'); return; }
+  if (shortSide > PL && shortSide > PW) { alert(L('La caja no cabe en el pallet.','The box does not fit on the pallet.')); return; }
 
   // Build all possible patterns from scratch
   const patterns = [];
@@ -1730,7 +1760,7 @@ function calculate() {
   const mixed = findBestMixed(PL, PW, longSide, shortSide);
   if (mixed && mixed.count > 0) patterns.push(mixed);
 
-  if (patterns.length === 0) { alert('No caben cajas con estas dimensiones.'); return; }
+  if (patterns.length === 0) { alert(L('No caben cajas con estas dimensiones.','No boxes fit with these dimensions.')); return; }
 
   // Pattern selection depends on interlocking mode
   const forceInterlock = rotationEnabled;
@@ -1749,25 +1779,19 @@ function calculate() {
   }
 
   const availableH = maxH - palletH;
-  if (availableH <= 0) { alert('La tarima supera la altura máxima.'); return; }
+  if (availableH <= 0) { alert(L('La tarima supera la altura máxima.','The pallet exceeds the maximum height.')); return; }
 
   const manualVal = +document.getElementById('palletManualLayers').value;
   const isManual = manualVal > 0;
   const layers = isManual ? manualVal : 1;
-  if (layers <= 0) { alert('No caben camas con esta altura.'); return; }
+  if (layers <= 0) { alert(L('No caben camas con esta altura.','No layers fit at this height.')); return; }
 
   const totalBoxes = best.count * layers;
   const boxesHeight = layers * BH;
   const totalHeight = boxesHeight + palletH;
 
-  const warn = document.getElementById('palletLayersWarning');
-  if (totalHeight > maxH) {
-    warn.style.color = 'var(--red)';
-    warn.textContent = `Atención: ${(totalHeight/10).toFixed(1)} cm supera el máximo de ${(maxH/10).toFixed(1)} cm`;
-  } else if (isManual) {
-    warn.style.color = 'var(--green)';
-    warn.textContent = `Altura total: ${(totalHeight/10).toFixed(1)} cm — dentro del límite`;
-  } else { warn.textContent = ''; }
+  warnState = { totalHeight, maxH, isManual };
+  updateWarn();
 
   // Build layers: A = original, B = rotated 180° for interlocking
   let layerA = JSON.parse(JSON.stringify(best.layouts[0]));
@@ -1915,59 +1939,59 @@ function renderResults() {
 
   // Stats
   let statsHTML = `
-    <div class="stat primary"><div class="val">${calc.totalBoxes}</div><div class="lbl">Cajas / Pallet</div></div>
-    <div class="stat orange"><div class="val">${calc.boxesPerLayer}</div><div class="lbl">Cajas / Cama</div></div>
-    <div class="stat teal"><div class="val">${calc.layers}</div><div class="lbl">Camas</div></div>
-    <div class="stat yellow"><div class="val">${(calc.totalHeight/10).toFixed(1)}</div><div class="lbl">Altura total (cm)${calc.exceedsMax ? ' ⚠' : ''}</div></div>
+    <div class="stat primary"><div class="val">${calc.totalBoxes}</div><div class="lbl">${L('Cajas / Pallet','Boxes / Pallet')}</div></div>
+    <div class="stat orange"><div class="val">${calc.boxesPerLayer}</div><div class="lbl">${L('Cajas / Cama','Boxes / Layer')}</div></div>
+    <div class="stat teal"><div class="val">${calc.layers}</div><div class="lbl">${L('Camas','Layers')}</div></div>
+    <div class="stat yellow"><div class="val">${(calc.totalHeight/10).toFixed(1)}</div><div class="lbl">${L('Altura total (cm)','Total height (cm)')}${calc.exceedsMax ? ' ⚠' : ''}</div></div>
   `;
   if (calc.totalWeight) {
-    statsHTML += `<div class="stat"><div class="val">${calc.totalWeight.toFixed(1)}</div><div class="lbl">Peso total (kg)</div></div>`;
+    statsHTML += `<div class="stat"><div class="val">${calc.totalWeight.toFixed(1)}</div><div class="lbl">${L('Peso total (kg)','Total weight (kg)')}</div></div>`;
   }
   document.getElementById('palletStatsRow').innerHTML = statsHTML;
 
   // Layer buttons
   const lbHTML = calc.interlocked
-    ? `<button class="view-btn active" onclick="PalletCalc.setLayerView('A')">Cama A (impares)</button><button class="view-btn" onclick="PalletCalc.setLayerView('B')">Cama B (pares)</button>`
-    : `<button class="view-btn active">Cama única</button>`;
+    ? `<button class="view-btn active" onclick="PalletCalc.setLayerView('A')">${L('Cama A (impares)','Layer A (odd)')}</button><button class="view-btn" onclick="PalletCalc.setLayerView('B')">${L('Cama B (pares)','Layer B (even)')}</button>`
+    : `<button class="view-btn active">${L('Cama única','Single layer')}</button>`;
   document.getElementById('palletLayerBtns').innerHTML = lbHTML;
 
   // 3D slider
   document.getElementById('palletLayerSlider3D').max = calc.layers;
   document.getElementById('palletLayerSlider3D').value = calc.layers;
-  document.getElementById('palletLayerLabel3D').textContent = calc.layers + ' camas';
+  document.getElementById('palletLayerLabel3D').textContent = calc.layers + L(' camas',' layers');
 
   // Detail table
   const rows = [
     ['Pallet', `${calc.PL/10} × ${calc.PW/10} cm`],
-    ['Altura tarima', `${calc.palletH/10} cm`],
-    ['Caja (ext.)', `${calc.BL} × ${calc.BW} × ${calc.BH} mm`],
-    ['Patrón', calc.patternName],
-    ['Rotación', calc.interlocked ? 'Interlocking (180°)' : 'Sin rotación'],
-    ['Cajas por cama', calc.boxesPerLayer],
-    ['Camas', `${calc.layers}${calc.layersManual ? ' (manual)' : ' (auto)'}`],
-    ['Total cajas', calc.totalBoxes],
-    ['Altura cajas', `${(calc.boxesHeight/10).toFixed(1)} cm (${calc.boxesHeight} mm)`],
-    ['Altura total', `${(calc.totalHeight/10).toFixed(1)} cm (tarima + cajas)`],
-    ['Holgura', calc.exceedsMax
-      ? `<span style="color:var(--red)">Excede por ${(calc.totalHeight - calc.maxH)/10} cm</span>`
+    [L('Altura tarima','Pallet height'), `${calc.palletH/10} cm`],
+    [L('Caja (ext.)','Box (ext.)'), `${calc.BL} × ${calc.BW} × ${calc.BH} mm`],
+    [L('Patrón','Pattern'), patName(calc.patternName)],
+    [L('Rotación','Rotation'), calc.interlocked ? 'Interlocking (180°)' : L('Sin rotación','No rotation')],
+    [L('Cajas por cama','Boxes per layer'), calc.boxesPerLayer],
+    [L('Camas','Layers'), `${calc.layers}${calc.layersManual ? ' (manual)' : ' (auto)'}`],
+    [L('Total cajas','Total boxes'), calc.totalBoxes],
+    [L('Altura cajas','Boxes height'), `${(calc.boxesHeight/10).toFixed(1)} cm (${calc.boxesHeight} mm)`],
+    [L('Altura total','Total height'), `${(calc.totalHeight/10).toFixed(1)} cm ${L('(tarima + cajas)','(pallet + boxes)')}`],
+    [L('Holgura','Clearance'), calc.exceedsMax
+      ? `<span style="color:var(--red)">${L('Excede por','Exceeds by')} ${(calc.totalHeight - calc.maxH)/10} cm</span>`
       : `${((calc.maxH - calc.totalHeight)/10).toFixed(1)} cm`],
-    ['Eficiencia de área', `${calc.areaEff.toFixed(1)}%`],
-    ['Eficiencia de altura', `${calc.heightEff.toFixed(1)}%`],
-    ['Eficiencia volumétrica', `${calc.volEff.toFixed(1)}%`],
+    [L('Eficiencia de área','Area efficiency'), `${calc.areaEff.toFixed(1)}%`],
+    [L('Eficiencia de altura','Height efficiency'), `${calc.heightEff.toFixed(1)}%`],
+    [L('Eficiencia volumétrica','Volumetric efficiency'), `${calc.volEff.toFixed(1)}%`],
   ];
   if (calc.boxWeight) {
-    rows.push(['Peso por caja', `${calc.boxWeight} kg`]);
-    rows.push(['Peso total', `${calc.totalWeight.toFixed(1)} kg`]);
+    rows.push([L('Peso por caja','Weight per box'), `${calc.boxWeight} kg`]);
+    rows.push([L('Peso total','Total weight'), `${calc.totalWeight.toFixed(1)} kg`]);
   }
   document.getElementById('palletDetailTable').innerHTML =
-    `<tr><th>Parámetro</th><th>Valor</th></tr>` +
+    `<tr><th>${L('Parámetro','Parameter')}</th><th>${L('Valor','Value')}</th></tr>` +
     rows.map(r => `<tr><td style="color:var(--text2)">${r[0]}</td><td>${r[1]}</td></tr>`).join('');
 
   // Efficiency
   document.getElementById('palletEffSection').innerHTML = `
-    <div class="eff-bar"><div class="eff-head"><span>Área de cama</span><span style="color:var(--blue)">${calc.areaEff.toFixed(1)}%</span></div><div class="eff-track"><div class="eff-fill" style="width:${calc.areaEff}%;background:var(--blue)"></div></div></div>
-    <div class="eff-bar"><div class="eff-head"><span>Altura utilizada</span><span style="color:var(--teal)">${calc.heightEff.toFixed(1)}%</span></div><div class="eff-track"><div class="eff-fill" style="width:${calc.heightEff}%;background:var(--teal)"></div></div></div>
-    <div class="eff-bar"><div class="eff-head"><span>Volumen total</span><span style="color:var(--orange)">${calc.volEff.toFixed(1)}%</span></div><div class="eff-track"><div class="eff-fill" style="width:${calc.volEff}%;background:var(--orange)"></div></div></div>
+    <div class="eff-bar"><div class="eff-head"><span>${L('Área de cama','Layer area')}</span><span style="color:var(--blue)">${calc.areaEff.toFixed(1)}%</span></div><div class="eff-track"><div class="eff-fill" style="width:${calc.areaEff}%;background:var(--blue)"></div></div></div>
+    <div class="eff-bar"><div class="eff-head"><span>${L('Altura utilizada','Height used')}</span><span style="color:var(--teal)">${calc.heightEff.toFixed(1)}%</span></div><div class="eff-track"><div class="eff-fill" style="width:${calc.heightEff}%;background:var(--teal)"></div></div></div>
+    <div class="eff-bar"><div class="eff-head"><span>${L('Volumen total','Total volume')}</span><span style="color:var(--orange)">${calc.volEff.toFixed(1)}%</span></div><div class="eff-track"><div class="eff-fill" style="width:${calc.volEff}%;background:var(--orange)"></div></div></div>
   `;
 
   currentLayerView = 'A';
@@ -2094,7 +2118,7 @@ function drawSideView() {
   ctx.fillStyle = '#151610';
   ctx.font = '9px ui-monospace, monospace';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('Tarima ' + (calc.palletH/10) + ' cm', offX + drawW / 2, baseY - tarimaH / 2);
+  ctx.fillText(L('Tarima ','Pallet ') + (calc.palletH/10) + ' cm', offX + drawW / 2, baseY - tarimaH / 2);
 
   // Boxes stacked on top of tarima
   const boxBaseY = baseY - tarimaH;
@@ -2114,7 +2138,7 @@ function drawSideView() {
     ctx.fillStyle = '#201a11';
     ctx.font = (isActive ? '600 ' : '400 ') + '10px system-ui, sans-serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('Cama ' + (i + 1) + ' (' + layer + ')', offX + drawW / 2, ly + lh / 2);
+    ctx.fillText(L('Cama ','Layer ') + (i + 1) + ' (' + layer + ')', offX + drawW / 2, ly + lh / 2);
   }
 
   // Max height line
@@ -2122,7 +2146,7 @@ function drawSideView() {
   ctx.strokeStyle = 'rgba(239,95,95,0.5)'; ctx.lineWidth = 1; ctx.setLineDash([5, 3]);
   ctx.beginPath(); ctx.moveTo(offX - 8, maxY); ctx.lineTo(offX + drawW + 8, maxY); ctx.stroke(); ctx.setLineDash([]);
   ctx.fillStyle = light ? '#c03030' : '#ef5f5f'; ctx.font = '10px ui-monospace, monospace'; ctx.textAlign = 'right';
-  ctx.fillText('Máx ' + (calc.maxH/10) + ' cm', offX + drawW + 8, maxY - 5);
+  ctx.fillText(L('Máx ','Max ') + (calc.maxH/10) + ' cm', offX + drawW + 8, maxY - 5);
 
   // Total height label
   ctx.fillStyle = getComputedStyle(root).getPropertyValue('--teal').trim(); ctx.textAlign = 'left';
@@ -2155,7 +2179,7 @@ function destroy3D() {
 
 function init3D() {
   if (threeInited || !calc || root.style.display==='none') return;
-  if(!window.THREE){document.getElementById('palletThree-container').textContent='Vista 3D no disponible sin conexión.';return;}
+  if(!window.THREE){document.getElementById('palletThree-container').textContent=L('Vista 3D no disponible sin conexión.','3D view unavailable offline.');return;}
   destroy3D();
   const c = document.getElementById('palletThree-container');
   if (!c.clientWidth) return;
@@ -2462,7 +2486,7 @@ function toggle3DStyle(s) {
 }
 
 function update3DLayers(v) {  const n = +v;
-  document.getElementById('palletLayerLabel3D').textContent = n + (n === 1 ? ' cama' : ' camas');
+  document.getElementById('palletLayerLabel3D').textContent = n + (n === 1 ? L(' cama',' layer') : L(' camas',' layers'));
   box3D.forEach(b => { b.mesh.visible = b.layer < n; b.wireframe.visible = b.layer < n; });
 }
 
@@ -2721,8 +2745,8 @@ function exportFullHTML() {
   const orangeC = light ? '#d07a1e' : '#f09a3e';
   const tealC = light ? '#1a9e80' : '#34d4a8';
 
-  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Reporte de Paletizado — ${calc.BL}×${calc.BW}×${calc.BH}mm</title>
+  const html = `<!DOCTYPE html><html lang="${LANG}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>${L('Reporte de Paletizado','Palletizing Report')} — ${calc.BL}×${calc.BW}×${calc.BH}mm</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:system-ui,sans-serif;background:${bg};color:${fg};padding:32px;max-width:900px;margin:0 auto}
@@ -2751,49 +2775,49 @@ td{font-family:monospace}
 footer{text-align:center;color:#555;font-size:11px;margin-top:32px;padding-top:16px;border-top:1px solid ${borderC}}
 
 </style></head><body>
-<h1>Reporte de Paletizado</h1>
-<p class="sub">Caja ${calc.BL}×${calc.BW}×${calc.BH} mm (ext.) · Pallet ${calc.PL/10}×${calc.PW/10} cm · Tarima ${calc.palletH/10} cm · Alt. máx. ${calc.maxH/10} cm</p>
+<h1>${L('Reporte de Paletizado','Palletizing Report')}</h1>
+<p class="sub">${L('Caja','Box')} ${calc.BL}×${calc.BW}×${calc.BH} mm (ext.) · Pallet ${calc.PL/10}×${calc.PW/10} cm · ${L('Tarima','Pallet height')} ${calc.palletH/10} cm · ${L('Alt. máx.','Max height')} ${calc.maxH/10} cm</p>
 <div class="stats">
-<div class="stat b"><div class="v">${calc.totalBoxes}</div><div class="l">Cajas / Pallet</div></div>
-<div class="stat o"><div class="v">${calc.boxesPerLayer}</div><div class="l">Cajas / Cama</div></div>
-<div class="stat t"><div class="v">${calc.layers}</div><div class="l">Camas</div></div>
-<div class="stat"><div class="v">${(calc.totalHeight/10).toFixed(1)}</div><div class="l">Altura total (cm)${calc.exceedsMax ? ' ⚠' : ''}</div></div>
-${calc.totalWeight ? `<div class="stat"><div class="v">${calc.totalWeight.toFixed(1)}</div><div class="l">Peso total (kg)</div></div>` : ''}
+<div class="stat b"><div class="v">${calc.totalBoxes}</div><div class="l">${L('Cajas / Pallet','Boxes / Pallet')}</div></div>
+<div class="stat o"><div class="v">${calc.boxesPerLayer}</div><div class="l">${L('Cajas / Cama','Boxes / Layer')}</div></div>
+<div class="stat t"><div class="v">${calc.layers}</div><div class="l">${L('Camas','Layers')}</div></div>
+<div class="stat"><div class="v">${(calc.totalHeight/10).toFixed(1)}</div><div class="l">${L('Altura total (cm)','Total height (cm)')}${calc.exceedsMax ? ' ⚠' : ''}</div></div>
+${calc.totalWeight ? `<div class="stat"><div class="v">${calc.totalWeight.toFixed(1)}</div><div class="l">${L('Peso total (kg)','Total weight (kg)')}</div></div>` : ''}
 </div>
 <table>
-<tr><th>Parámetro</th><th>Valor</th></tr>
+<tr><th>${L('Parámetro','Parameter')}</th><th>${L('Valor','Value')}</th></tr>
 <tr><td style="color:${mutedC}">Pallet</td><td>${calc.PL/10} × ${calc.PW/10} cm</td></tr>
-<tr><td style="color:${mutedC}">Altura tarima</td><td>${calc.palletH/10} cm</td></tr>
-<tr><td style="color:${mutedC}">Caja (ext.)</td><td>${calc.BL} × ${calc.BW} × ${calc.BH} mm</td></tr>
-<tr><td style="color:${mutedC}">Patrón</td><td>${calc.patternName}</td></tr>
-<tr><td style="color:${mutedC}">Rotación</td><td>${calc.interlocked ? 'Interlocking (180°)' : 'Sin rotación'}</td></tr>
-<tr><td style="color:${mutedC}">Cajas/cama</td><td>${calc.boxesPerLayer}</td></tr>
-<tr><td style="color:${mutedC}">Camas</td><td>${calc.layers}${calc.layersManual ? ' (manual)' : ' (auto)'}</td></tr>
-<tr><td style="color:${mutedC}">Total cajas</td><td style="color:${blueC};font-weight:700">${calc.totalBoxes}</td></tr>
-<tr><td style="color:${mutedC}">Altura cajas</td><td>${(calc.boxesHeight/10).toFixed(1)} cm</td></tr>
-<tr><td style="color:${mutedC}">Altura total</td><td>${(calc.totalHeight/10).toFixed(1)} cm (tarima + cajas)${calc.exceedsMax ? ' ⚠' : ''}</td></tr>
-<tr><td style="color:${mutedC}">Holgura</td><td style="color:${calc.exceedsMax ? '#ef5f5f' : '#52d47c'}">${calc.exceedsMax ? 'Excede por '+((calc.totalHeight-calc.maxH)/10).toFixed(1)+' cm' : ((calc.maxH-calc.totalHeight)/10).toFixed(1)+' cm'}</td></tr>
+<tr><td style="color:${mutedC}">${L('Altura tarima','Pallet height')}</td><td>${calc.palletH/10} cm</td></tr>
+<tr><td style="color:${mutedC}">${L('Caja (ext.)','Box (ext.)')}</td><td>${calc.BL} × ${calc.BW} × ${calc.BH} mm</td></tr>
+<tr><td style="color:${mutedC}">${L('Patrón','Pattern')}</td><td>${patName(calc.patternName)}</td></tr>
+<tr><td style="color:${mutedC}">${L('Rotación','Rotation')}</td><td>${calc.interlocked ? 'Interlocking (180°)' : L('Sin rotación','No rotation')}</td></tr>
+<tr><td style="color:${mutedC}">${L('Cajas/cama','Boxes/layer')}</td><td>${calc.boxesPerLayer}</td></tr>
+<tr><td style="color:${mutedC}">${L('Camas','Layers')}</td><td>${calc.layers}${calc.layersManual ? ' (manual)' : ' (auto)'}</td></tr>
+<tr><td style="color:${mutedC}">${L('Total cajas','Total boxes')}</td><td style="color:${blueC};font-weight:700">${calc.totalBoxes}</td></tr>
+<tr><td style="color:${mutedC}">${L('Altura cajas','Boxes height')}</td><td>${(calc.boxesHeight/10).toFixed(1)} cm</td></tr>
+<tr><td style="color:${mutedC}">Altura total</td><td>${(calc.totalHeight/10).toFixed(1)} cm ${L('(tarima + cajas)','(pallet + boxes)')}${calc.exceedsMax ? ' ⚠' : ''}</td></tr>
+<tr><td style="color:${mutedC}">${L('Holgura','Clearance')}</td><td style="color:${calc.exceedsMax ? '#ef5f5f' : '#52d47c'}">${calc.exceedsMax ? L('Excede por ','Exceeds by ')+((calc.totalHeight-calc.maxH)/10).toFixed(1)+' cm' : ((calc.maxH-calc.totalHeight)/10).toFixed(1)+' cm'}</td></tr>
 </table>
-<h2 style="font-size:16px;margin:20px 0 10px">Vista superior — Camas</h2>
+<h2 style="font-size:16px;margin:20px 0 10px">${L('Vista superior — Camas','Top view — Layers')}</h2>
 <div class="imgs">
-<div><img src="${topImg}" alt="Cama A"><div class="cap">Cama A (impares)</div></div>
-<div><img src="${topImgB}" alt="Cama B"><div class="cap">Cama B (pares)</div></div>
+<div><img src="${topImg}" alt="${L('Cama A','Layer A')}"><div class="cap">${L('Cama A (impares)','Layer A (odd)')}</div></div>
+<div><img src="${topImgB}" alt="${L('Cama B','Layer B')}"><div class="cap">${L('Cama B (pares)','Layer B (even)')}</div></div>
 </div>
-<h2 style="font-size:16px;margin:20px 0 10px">Vista lateral</h2>
-<div class="side-img"><img src="${sideImg}" alt="Vista lateral"></div>
+<h2 style="font-size:16px;margin:20px 0 10px">${L('Vista lateral','Side view')}</h2>
+<div class="side-img"><img src="${sideImg}" alt="${L('Vista lateral','Side view')}"></div>
 <div class="eff">
-<h2 style="font-size:16px;margin-bottom:12px">Eficiencia</h2>
-<div class="eff-item"><div class="eff-head"><span>Área de cama</span><span style="color:${blueC}">${calc.areaEff.toFixed(1)}%</span></div><div class="eff-track"><div class="eff-fill" style="width:${calc.areaEff}%;background:${blueC}"></div></div></div>
-<div class="eff-item"><div class="eff-head"><span>Altura utilizada</span><span style="color:${tealC}">${calc.heightEff.toFixed(1)}%</span></div><div class="eff-track"><div class="eff-fill" style="width:${calc.heightEff}%;background:${tealC}"></div></div></div>
-<div class="eff-item"><div class="eff-head"><span>Volumen total</span><span style="color:${orangeC}">${calc.volEff.toFixed(1)}%</span></div><div class="eff-track"><div class="eff-fill" style="width:${calc.volEff}%;background:${orangeC}"></div></div></div>
+<h2 style="font-size:16px;margin-bottom:12px">${L('Eficiencia','Efficiency')}</h2>
+<div class="eff-item"><div class="eff-head"><span>${L('Área de cama','Layer area')}</span><span style="color:${blueC}">${calc.areaEff.toFixed(1)}%</span></div><div class="eff-track"><div class="eff-fill" style="width:${calc.areaEff}%;background:${blueC}"></div></div></div>
+<div class="eff-item"><div class="eff-head"><span>${L('Altura utilizada','Height used')}</span><span style="color:${tealC}">${calc.heightEff.toFixed(1)}%</span></div><div class="eff-track"><div class="eff-fill" style="width:${calc.heightEff}%;background:${tealC}"></div></div></div>
+<div class="eff-item"><div class="eff-head"><span>${L('Volumen total','Total volume')}</span><span style="color:${orangeC}">${calc.volEff.toFixed(1)}%</span></div><div class="eff-track"><div class="eff-fill" style="width:${calc.volEff}%;background:${orangeC}"></div></div></div>
 </div>
-<footer>Generado con PalletCalc</footer>
+<footer>${L('Generado con PalletCalc','Generated with PalletCalc')}</footer>
 </body></html>`;
 
   const blob = new Blob([html], { type: 'text/html' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `paletizado_${calc.BL}x${calc.BW}x${calc.BH}.html`;
+  a.download = `${L('paletizado','palletizing')}_${calc.BL}x${calc.BW}x${calc.BH}.html`;
   a.click();
   URL.revokeObjectURL(a.href);
 }
@@ -2801,14 +2825,59 @@ ${calc.totalWeight ? `<div class="stat"><div class="v">${calc.totalWeight.toFixe
 
 
 function syncTheme(){currentTheme=document.body.classList.contains('dark')?'dark':'light';isDarkMode=currentTheme==='dark';if(calc&&root.style.display!=='none'){drawTopView();drawSideView();if(threeInited){destroy3D();init3D();}}}
+function relang(){if(!calc)return;updateWarn();renderResults();const tab=root.querySelector('.tab.active');if(tab&&tab.getAttribute('onclick')&&tab.getAttribute('onclick').indexOf("'top'")<0)tab.click();else{drawTopView();drawSideView();}}
 function open(){syncTheme();if(calc){const tab=root.querySelector('.tab.active');if(tab)tab.click();}}
 function close(){destroy3D();}
-window.PalletCalc={calculate,setMeasure,setRotation,applyPreset,switchTab,setLayerView,set3DView,toggle3DStyle,toggleCamSwitch,update3DLayers,downloadViewSVG,downloadViewJPG,exportFullHTML,open,close,syncTheme,getResult:()=>calc,is3DActive:()=>threeInited};
+window.PalletCalc={relang,calculate,setMeasure,setRotation,applyPreset,switchTab,setLayerView,set3DView,toggle3DStyle,toggleCamSwitch,update3DLayers,downloadViewSVG,downloadViewJPG,exportFullHTML,open,close,syncTheme,getResult:()=>calc,is3DActive:()=>threeInited};
 ['palletBoxL','palletBoxW','palletBoxH'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{if(measureType==='interna')setMeasure('interna');}));
 root.querySelectorAll('input[type="number"]').forEach(e=>e.addEventListener('keydown',evt=>{if(evt.key==='Enter'){evt.preventDefault();calculate();}}));
 window.addEventListener('resize',()=>{if(calc&&root.style.display!=='none'){if(root.querySelector('#palletTab-top.active'))drawTopView();if(root.querySelector('#palletTab-side.active'))drawSideView();}});
 syncTheme();
 document.querySelector('.mode-bar').addEventListener('keydown',e=>{const tabs=[...document.querySelectorAll('.mode-tab')];let i=tabs.indexOf(e.target);if(i<0)return;const keys=['ArrowRight','ArrowLeft','Home','End'];if(!keys.includes(e.key))return;e.preventDefault();i=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;tabs[i].click();tabs[i].focus();});
+})();
+
+// ===== Pallet panel static text: ES -> EN =====
+(function(){
+  var EN={
+    'Caja':'Box','Tipo de medida':'Measure type','Interna (+10mm)':'Internal (+10 mm)','Externa':'External',
+    'Largo (mm)':'Length (mm)','Ancho (mm)':'Width (mm)','Alto (mm)':'Height (mm)',
+    'Dimensiones externas calculadas':'Calculated external dimensions',
+    'Tipo de pallet':'Pallet type','Estándar Americano (120×100 cm)':'American standard (120×100 cm)','Personalizado':'Custom',
+    'Largo':'Length','Ancho':'Width','Alto tarima':'Pallet height','Restricciones':'Constraints',
+    'Altura máxima (cm)':'Maximum height (cm)','Número de camas':'Number of layers','cap':'layers',
+    'Rotación entre camas':'Rotation between layers','Sin rotación':'No rotation',
+    'Peso por caja (kg) — opcional':'Weight per box (kg) — optional','Calcular patrón':'Calculate pattern',
+    'Ingresá las dimensiones y presioná':'Enter the dimensions and press','para ver los resultados.':'to see the results.',
+    'Vista Superior':'Top view','Vista 3D':'3D view','Vista Lateral':'Side view','Datos':'Data',
+    'Orientación 1':'Orientation 1','Orientación 2':'Orientation 2',
+    'Descargar plano SVG':'Download SVG drawing','Descargar JPG':'Download JPG','Descargar HTML completo':'Download full HTML',
+    'Isométrica':'Isometric','Frontal':'Front','Lateral':'Side','Superior':'Top','Sólido':'Solid','Camas:':'Layers:',
+    'Paletizado':'Palletizing'
+  };
+  var ATTRS=['aria-label','title'];
+  window.translatePalletDOM=function(){
+    var root=document.getElementById('palletPanel');if(!root)return;
+    var en=LANG==='en';
+    var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),n,nodes=[];
+    while((n=w.nextNode()))nodes.push(n);
+    nodes.forEach(function(n){
+      if(!en){if(n.__es!==undefined){n.nodeValue=n.__es;n.__es=undefined;}return;}
+      var src=n.__es!==undefined?n.__es:n.nodeValue;
+      var t=src.trim();
+      if(t&&EN.hasOwnProperty(t)){if(n.__es===undefined)n.__es=n.nodeValue;n.nodeValue=src.replace(t,EN[t]);}
+    });
+    root.querySelectorAll('[aria-label],[title]').forEach(function(el){
+      ATTRS.forEach(function(a){
+        if(!el.hasAttribute(a))return;
+        var k='data-es-'+a;
+        if(!en){if(el.hasAttribute(k)){el.setAttribute(a,el.getAttribute(k));el.removeAttribute(k);}return;}
+        var cur=el.hasAttribute(k)?el.getAttribute(k):el.getAttribute(a);
+        if(EN.hasOwnProperty(cur.trim())){if(!el.hasAttribute(k))el.setAttribute(k,cur);el.setAttribute(a,EN[cur.trim()]);}
+      });
+    });
+  };
+  var orig=window.applyLang;
+  window.applyLang=function(){orig();translatePalletDOM();};
 })();
 </script>
 </body>
