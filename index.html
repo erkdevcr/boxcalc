@@ -49,6 +49,19 @@ body.dark{color-scheme:dark;--bg-app:#1a1c19;--bg-panel:#20231f;--bg-card:#26292
 @media(max-width:800px){.mode-tab{flex-direction:column;gap:6px;padding:12px 4px;font-size:.8125rem}}
 @media(max-width:520px){.input-panel{--panel-pad-x:16px;--panel-pad-y:16px}.mode-tab{font-size:11px;line-height:1.4}}
 
+.mod-chips-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px}.mod-chips{display:inline-flex;flex-wrap:wrap;gap:8px}
+.mod-chip{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 12px 0 10px;border:0;border-radius:0;background:var(--bg-card);color:var(--text-secondary);font-size:12px;font-weight:600;text-decoration:line-through}
+.mod-chip:hover{background:var(--bg-card);color:var(--text-primary)}
+.mod-chip.on{background:var(--bg-card);color:var(--text-primary);text-decoration:none}
+.mod-chip-check{width:16px;height:16px;border-radius:0;border:1.5px solid var(--text-secondary);display:inline-block;position:relative;flex:none}
+.mod-chip.on .mod-chip-check{background:var(--text-primary);border-color:var(--text-primary)}
+.mod-chip.on .mod-chip-check::after{content:'';position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid var(--bg-card);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.mod-hint{margin:8px 0 4px;font-size:11px;color:var(--text-secondary)}
+.mod-nofit{background:var(--bg-input);border-left:3px solid var(--accent-red);margin-top:12px}
+.delta-arrow{display:inline-block;width:.7em;height:.7em;margin-left:3px;vertical-align:baseline;flex:none}
+.dims-line .dv{display:inline-block;width:3.3em;text-align:left;white-space:nowrap}.dims-line .dx{display:inline-block;width:1.4em;text-align:center}
+.delta-val.up,.delta-arrow.up{color:var(--accent-green)}.delta-val.down,.delta-arrow.down{color:var(--accent-red)}
+.card[data-mod] .suggestion{border-left:0}
 /* Pallet workspace uses the host application's tokens and typography. */
 #palletPanel{--blue:var(--accent-blue);--blue-dim:var(--soft-accent);--teal:var(--accent-green);--orange:var(--accent);--yellow:var(--accent-yellow);--red:var(--accent-red);--green:var(--accent-green);--text:var(--text-primary);--text2:var(--text-secondary);--text3:var(--text-secondary);--card:var(--bg-card);--radius:10px;--pallet-outer:#b0ada8;--pallet-inner:#e8e6e0;--box-a-fill:#e6c187;--box-a-stroke:#9d7434;--box-a-text:#362810;--box-b-fill:#b09264;--box-b-stroke:#785b30;--box-b-text:#201a11;--dim-text:var(--text-secondary);--margin-text:#342714}
 body.dark #palletPanel{--pallet-outer:#797a72;--pallet-inner:#333b37;--dim-text:var(--text-secondary)}
@@ -656,6 +669,7 @@ function buscar() {
     `;
 
   window._modSVGs = [];
+  window._modData = [];
 
   const container = document.getElementById('results');
   if (results.length === 0 && modOnlyResults.length === 0) {
@@ -758,89 +772,120 @@ function renderCard(r, pL, pW, pH) {
   </div>`;
 }
 
+window._modData = [];
 function renderModCard(r, pL, pW, pH) {
-  const { caja, suggestion } = r;
-  const fit = suggestion.fit;
-  const modParts = [];
-  if (suggestion.dl !== 0) modParts.push(`${T.largo} ${suggestion.dl > 0 ? '+' : ''}${suggestion.dl}mm`);
-  if (suggestion.dw !== 0) modParts.push(`${T.ancho} ${suggestion.dw > 0 ? '+' : ''}${suggestion.dw}mm`);
-  if (suggestion.dh !== 0) modParts.push(`${T.alto} ${suggestion.dh > 0 ? '+' : ''}${suggestion.dh}mm`);
+  const idx = window._modData.length;
+  window._modData.push({
+    caja: r.caja, suggestion: r.suggestion, pL, pW, pH,
+    allowStack: document.getElementById('stackToggle').checked,
+    on: { l: true, w: true, h: true }, svgIdx: null
+  });
+  return `<div class="card" data-mod="${idx}">${modCardInner(idx)}</div>`;
+}
 
-  const modCaja = { id: caja.id, l: suggestion.newL, w: suggestion.newW, h: suggestion.newH };
-  const modBoxVol = modCaja.l * modCaja.w * modCaja.h;
-  const modUsedPct = suggestion.pct;
-  const modWastePct = 100 - modUsedPct;
+function toggleModAxis(event, idx, axis) {
+  event.stopPropagation();
+  const d = window._modData[idx];
+  d.on[axis] = !d.on[axis];
+  const card = document.querySelector('.card[data-mod="' + idx + '"]');
+  card.innerHTML = modCardInner(idx);
+  const chip = card.querySelector('[data-axis="' + axis + '"]');
+  if (chip) chip.focus({ preventScroll: true });
+}
 
-  const sobraL = modCaja.l - fit.nl * fit.pl;
-  const sobraW = modCaja.w - fit.nw * fit.pw;
-  const sobraH = modCaja.h - fit.nh * fit.ph;
+function deltaVal(v, d) {
+  if (!d) return `<span class="dv">${v}</span>`;
+  return `<span class="dv delta-val ${d > 0 ? 'up' : 'down'}">${v}${deltaArrow(d)}</span>`;
+}
 
-  const pctClass = modUsedPct >= 90 ? 'stat-good' : modUsedPct >= 80 ? 'stat-ok' : 'stat-bad';
-  const wasteClass = modWastePct <= 10 ? 'stat-good' : modWastePct <= 20 ? 'stat-ok' : 'stat-bad';
+function deltaArrow(d) {
+  if (!d) return '';
+  const up = d > 0;
+  const label = (up ? '+' : '') + d + ' mm';
+  return `<svg class="delta-arrow ${up ? 'up' : 'down'}" viewBox="0 0 10 10" role="img" aria-label="${label}"><title>${label}</title><path d="${up ? 'M5 1.2 9 8.2H1z' : 'M5 8.8 1 1.8h8z'}" fill="currentColor"/></svg>`;
+}
 
-  const distHTML = `
-    <div class="distribution-info">
-      <h4>${T.distribCajaMod}</h4>
-      <table class="dist-table">
-        <tr><th>${T.eje}</th><th>${T.caja}</th><th>${T.producto}</th><th>${T.cantidad}</th><th>${T.sobrante}</th></tr>
-        <tr><td>${T.largo}</td><td>${modCaja.l} mm</td><td>${fit.pl} mm</td><td>${fit.nl}</td><td>${sobraL} mm</td></tr>
-        <tr><td>${T.ancho}</td><td>${modCaja.w} mm</td><td>${fit.pw} mm</td><td>${fit.nw}</td><td>${sobraW} mm</td></tr>
-        <tr><td>${T.alto}</td><td>${modCaja.h} mm</td><td>${fit.ph} mm</td><td>${fit.nh}</td><td>${sobraH} mm</td></tr>
-      </table>
-    </div>`;
+function modCardInner(idx) {
+  const d = window._modData[idx];
+  const caja = d.caja, sg = d.suggestion;
+  const dl = d.on.l ? sg.dl : 0, dw = d.on.w ? sg.dw : 0, dh = d.on.h ? sg.dh : 0;
+  const modCaja = { id: caja.id, l: caja.l + dl, w: caja.w + dw, h: caja.h + dh };
+  const fit = calcFit(modCaja.l, modCaja.w, modCaja.h, d.pL, d.pW, d.pH, d.allowStack);
+  const units = fit ? fit.total : 0;
+  const boxVol = modCaja.l * modCaja.w * modCaja.h;
+  const usedPct = fit ? (fit.usedVol / boxVol) * 100 : 0;
+  const wastePct = fit ? 100 - usedPct : 100;
 
-  const diagramHTML = renderDiagrams(modCaja, fit);
+  const axes = [['l', T.largo, sg.dl], ['w', T.ancho, sg.dw], ['h', T.alto, sg.dh]].filter(a => a[2] !== 0);
+  const chips = axes.map(a => {
+    const on = d.on[a[0]];
+    return `<button type="button" class="mod-chip${on ? ' on' : ''}" data-axis="${a[0]}" aria-pressed="${on}" onclick="toggleModAxis(event, ${idx}, '${a[0]}')">` +
+      `<span class="mod-chip-check" aria-hidden="true"></span>${a[1]} ${a[2] > 0 ? '+' : ''}${a[2]}mm</button>`;
+  }).join('');
 
-  const techSVG = buildTechnicalSVG(modCaja, fit);
-  const svgIdx = window._modSVGs.length;
-  window._modSVGs.push({ svg: techSVG, name: caja.id + '-mod-' + modCaja.l + 'x' + modCaja.w + 'x' + modCaja.h });
+  const sugHTML = `
+      <div class="suggestion suggestion-improve">
+        <h4>${T.modNecesaria}</h4>
+        <div class="mod-chips-row"><strong>${T.cambios}:</strong> <span class="mod-chips">${chips}</span></div>
+        <div class="mod-hint">${T.modHint}</div>
+        <div><strong>${T.medidaFinal}:</strong> ${modCaja.l} &times; ${modCaja.w} &times; ${modCaja.h} mm</div>
+      </div>`;
+
+  let bodyHTML = '';
+  let svgIdx = d.svgIdx;
+  if (fit) {
+    const pctClass = usedPct >= 90 ? 'stat-good' : usedPct >= 80 ? 'stat-ok' : 'stat-bad';
+    const wasteClass = wastePct <= 10 ? 'stat-good' : wastePct <= 20 ? 'stat-ok' : 'stat-bad';
+    const sobraL = modCaja.l - fit.nl * fit.pl;
+    const sobraW = modCaja.w - fit.nw * fit.pw;
+    const sobraH = modCaja.h - fit.nh * fit.ph;
+    const techSVG = buildTechnicalSVG(modCaja, fit);
+    const entry = { svg: techSVG, name: caja.id + '-mod-' + modCaja.l + 'x' + modCaja.w + 'x' + modCaja.h };
+    if (svgIdx === null) { svgIdx = window._modSVGs.length; window._modSVGs.push(entry); d.svgIdx = svgIdx; }
+    else window._modSVGs[svgIdx] = entry;
+    bodyHTML = `
+      <div class="card-stats" style="border-top:none; margin-top:12px;">
+        <div class="stat"><div class="stat-value ${pctClass}">${usedPct.toFixed(1)}%</div><div class="stat-label">${T.aprovechado}</div></div>
+        <div class="stat"><div class="stat-value ${wasteClass}">${wastePct.toFixed(1)}%</div><div class="stat-label">${T.desperdicio}</div></div>
+        <div class="stat"><div class="stat-value">${fit.nl}&times;${fit.nw}</div><div class="stat-label">${T.porPiso}</div></div>
+        <div class="stat"><div class="stat-value">${fit.nh}</div><div class="stat-label">${fit.nh>1?T.pisos2:T.piso}</div></div>
+      </div>
+      <div class="distribution-info">
+        <h4>${T.distribCajaMod}</h4>
+        <table class="dist-table">
+          <tr><th>${T.eje}</th><th>${T.caja}</th><th>${T.producto}</th><th>${T.cantidad}</th><th>${T.sobrante}</th></tr>
+          <tr><td>${T.largo}</td><td>${modCaja.l} mm</td><td>${fit.pl} mm</td><td>${fit.nl}</td><td>${sobraL} mm</td></tr>
+          <tr><td>${T.ancho}</td><td>${modCaja.w} mm</td><td>${fit.pw} mm</td><td>${fit.nw}</td><td>${sobraW} mm</td></tr>
+          <tr><td>${T.alto}</td><td>${modCaja.h} mm</td><td>${fit.ph} mm</td><td>${fit.nh}</td><td>${sobraH} mm</td></tr>
+        </table>
+      </div>
+      ${renderDiagrams(modCaja, fit)}
+      <div style="text-align:center; margin-top:10px;">
+        <button class="btn-download-svg" onclick="event.stopPropagation(); downloadModSVG(${svgIdx});">${T.descargarSVG}</button>
+        <button class="btn-download-svg" onclick="event.stopPropagation(); downloadJPG(this, '${caja.id}-mod-${modCaja.l}x${modCaja.w}x${modCaja.h}');" style="margin-left:8px;">${T.descargarJPG}</button>
+      </div>`;
+  } else {
+    bodyHTML = `<div class="suggestion mod-nofit"><div>${T.noFitMod}</div></div>`;
+  }
 
   return `
-  <div class="card">
     <div class="card-top">
       <div>
         <div class="card-name">${caja.id}</div>
-        <div class="card-dims">${caja.l} &times; ${caja.w} &times; ${caja.h} mm</div>
-        <div class="card-dims" style="color:#d69e2e; font-weight:600;">${suggestion.newL} &times; ${suggestion.newW} &times; ${suggestion.newH} mm</div>
+        <div class="card-dims dims-line"><span class="dv">${caja.l}</span><span class="dx">&times;</span><span class="dv">${caja.w}</span><span class="dx">&times;</span><span class="dv">${caja.h}</span> mm</div>
+        <div class="card-dims dims-line" style="color:#d69e2e; font-weight:600;">${deltaVal(modCaja.l, dl)}<span class="dx">&times;</span>${deltaVal(modCaja.w, dw)}<span class="dx">&times;</span>${deltaVal(modCaja.h, dh)} mm</div>
       </div>
       <div class="card-units">
-        <div class="number" style="color:#d69e2e;">${suggestion.total}</div>
+        <div class="number" style="color:#d69e2e;">${units}</div>
         <div class="label">${T.conModLabel}</div>
-        <div class="label" style="color:#d69e2e;">${T.desperdicio}: ${modWastePct.toFixed(1)}%</div>
+        <div class="label" style="color:#d69e2e;">${T.desperdicio}: ${wastePct.toFixed(1)}%</div>
       </div>
     </div>
     <div class="expand-hint">${T.clickDetalles2}</div>
     <div class="card-detail">
-      <div class="suggestion suggestion-improve">
-        <h4>${T.modNecesaria}</h4>
-        <div><strong>${T.cambios}:</strong> ${modParts.join(' &middot; ')}</div>
-      </div>
-      <div class="card-stats" style="border-top:none; margin-top:12px;">
-        <div class="stat">
-          <div class="stat-value ${pctClass}">${modUsedPct.toFixed(1)}%</div>
-          <div class="stat-label">${T.aprovechado}</div>
-        </div>
-        <div class="stat">
-          <div class="stat-value ${wasteClass}">${modWastePct.toFixed(1)}%</div>
-          <div class="stat-label">${T.desperdicio}</div>
-        </div>
-        <div class="stat">
-          <div class="stat-value">${fit.nl}&times;${fit.nw}</div>
-          <div class="stat-label">${T.porPiso}</div>
-        </div>
-        <div class="stat">
-          <div class="stat-value">${fit.nh}</div>
-          <div class="stat-label">${fit.nh>1?T.pisos2:T.piso}</div>
-        </div>
-      </div>
-      ${distHTML}
-      ${diagramHTML}
-      <div style="text-align:center; margin-top:10px;">
-        <button class="btn-download-svg" onclick="event.stopPropagation(); downloadModSVG(${svgIdx});">${T.descargarSVG}</button>
-        <button class="btn-download-svg" onclick="event.stopPropagation(); downloadJPG(this, '${caja.id}-mod-${modCaja.l}x${modCaja.w}x${modCaja.h}');" style="margin-left:8px;">${T.descargarJPG}</button>
-      </div>
-    </div>
-  </div>`;
+      ${sugHTML}
+      ${bodyHTML}
+    </div>`;
 }
 
 function buildTopSVG(caja, fit, vbW, vbH) {
@@ -1502,6 +1547,8 @@ var STRINGS = {
     sugMod: 'Sugerencia de modificaci\u00f3n',
     modNecesaria: 'Modificaci\u00f3n necesaria',
     cambios: 'Cambios', medidaFinal: 'Medida final',
+    modHint: 'Toca un cambio para quitarlo o volver a aplicarlo.',
+    noFitMod: 'Con esta combinación de cambios el producto no cabe en la caja.',
     orientacion: 'Orientaci\u00f3n',
     vistaSup: 'Vista superior', vistaLat: 'Vista lateral',
     descargarSVG: '&#11015; Descargar plano SVG',
@@ -1550,6 +1597,8 @@ var STRINGS = {
     sugMod: 'Modification suggestion',
     modNecesaria: 'Required modification',
     cambios: 'Changes', medidaFinal: 'Final size',
+    modHint: 'Tap a change to remove or re-apply it.',
+    noFitMod: 'With this combination of changes the product does not fit in the box.',
     orientacion: 'Orientation',
     vistaSup: 'Top view', vistaLat: 'Side view',
     descargarSVG: '&#11015; Download SVG layout',
