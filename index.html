@@ -75,6 +75,9 @@ body.dark{color-scheme:dark;--bg-app:#1a1c19;--bg-panel:#20231f;--bg-card:#26292
 .settings-clear{min-height:36px;padding:0 12px;border:1px solid var(--border);background:transparent;color:var(--text-primary);border-radius:var(--radius);font-size:12px;font-weight:600}
 .settings-clear:hover{border-color:var(--accent-red);color:var(--accent-red)}
 .settings-clear[disabled]{opacity:.4;pointer-events:none}
+#palletPanel .calc-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px}
+#palletPanel .calc-row .btn-calc{flex:1 1 140px;width:auto;margin-top:0}
+#palletPanel .rt-toggle{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--text-secondary);cursor:pointer;margin:0}
 /* Pallet workspace uses the host application's tokens and typography. */
 #palletPanel{--blue:var(--accent-blue);--blue-dim:var(--soft-accent);--teal:var(--accent-green);--orange:var(--accent);--yellow:var(--accent-yellow);--red:var(--accent-red);--green:var(--accent-green);--text:var(--text-primary);--text2:var(--text-secondary);--text3:var(--text-secondary);--card:var(--bg-card);--radius:10px;--pallet-outer:#b0ada8;--pallet-inner:#e8e6e0;--box-a-fill:#e6c187;--box-a-stroke:#9d7434;--box-a-text:#362810;--box-b-fill:#b09264;--box-b-stroke:#785b30;--box-b-text:#201a11;--dim-text:var(--text-secondary);--margin-text:#342714}
 body.dark #palletPanel{--pallet-outer:#797a72;--pallet-inner:#333b37;--dim-text:var(--text-secondary)}
@@ -88,8 +91,6 @@ body.dark #palletPanel{--pallet-outer:#797a72;--pallet-inner:#333b37;--dim-text:
 #palletPanel .row-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 #palletPanel .input-wrap{position:relative;min-width:0}
 #palletPanel input[type=number],#palletPanel select{width:100%;min-width:0;height:48px;background:var(--bg-input);border:1px solid var(--border);border-radius:10px;color:var(--text-primary);padding:10px 30px 10px 10px;font:14px var(--mono);outline:none}
-#palletPanel input[type=number]{appearance:textfield;-moz-appearance:textfield}
-#palletPanel input::-webkit-inner-spin-button,#palletPanel input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 #palletPanel select{padding:10px;font:12px ui-sans-serif,system-ui,sans-serif}
 #palletPanel input::placeholder{color:var(--text-secondary);opacity:1}
 #palletPanel input:disabled{color:var(--text-secondary);opacity:1;background:var(--bg-app)}
@@ -210,22 +211,22 @@ body.dark #palletPanel input[type=number],body.dark #palletPanel select{border-c
 <div class="row-3">
 <div class="field">
 <label for="palletL">Largo</label>
-<div class="input-wrap"><input disabled="" id="palletL" placeholder="120" type="number"/><span class="unit">cm</span></div>
+<div class="input-wrap"><input disabled="" id="palletL" min="1" placeholder="120" type="number"/><span class="unit">cm</span></div>
 </div>
 <div class="field">
 <label for="palletW">Ancho</label>
-<div class="input-wrap"><input disabled="" id="palletW" placeholder="100" type="number"/><span class="unit">cm</span></div>
+<div class="input-wrap"><input disabled="" id="palletW" min="1" placeholder="100" type="number"/><span class="unit">cm</span></div>
 </div>
 <div class="field">
 <label for="palletH">Alto tarima</label>
-<div class="input-wrap"><input id="palletH" placeholder="15" type="number"/><span class="unit">cm</span></div>
+<div class="input-wrap"><input id="palletH" min="1" placeholder="15" type="number"/><span class="unit">cm</span></div>
 </div>
 </div>
 
 <div class="section-label">Restricciones</div>
 <div class="field">
 <label for="palletMaxHeight">Altura máxima (cm)</label>
-<div class="input-wrap"><input id="palletMaxHeight" placeholder="135" type="number"/><span class="unit">cm</span></div>
+<div class="input-wrap"><input id="palletMaxHeight" min="1" placeholder="135" type="number"/><span class="unit">cm</span></div>
 </div>
 <div class="field">
 <label for="palletManualLayers">Número de camas</label>
@@ -241,10 +242,10 @@ body.dark #palletPanel input[type=number],body.dark #palletPanel select{border-c
 </div>
 <div class="field">
 <label for="palletBoxWeight">Peso por caja (kg) — opcional</label>
-<div class="input-wrap"><input id="palletBoxWeight" placeholder="—" type="number" value=""/><span class="unit">kg</span></div>
+<div class="input-wrap"><input id="palletBoxWeight" min="0" placeholder="—" step="0.1" type="number" value=""/><span class="unit">kg</span></div>
 </div>
 
-<button class="btn-calc" onclick="PalletCalc.calculate()">Calcular patrón</button>
+<div class="calc-row"><button class="btn-calc" onclick="PalletCalc.calculate()">Calcular patrón</button><label class="rt-toggle"><span class="rt-label">Tiempo real</span><span class="toggle"><input type="checkbox" id="palletRealtime" onchange="PalletCalc.setRealtime(this.checked)"><span class="slider"></span></span></label></div>
 </div>
 <!-- MAIN -->
 <div class="main">
@@ -258,9 +259,9 @@ body.dark #palletPanel input[type=number],body.dark #palletPanel select{border-c
 <div class="stats-row" id="palletStatsRow"></div>
 <div class="tabs">
 <button class="tab active" onclick="PalletCalc.switchTab('top')">Vista Superior</button>
-<button class="tab" onclick="PalletCalc.switchTab('3d')">Vista 3D</button>
 <button class="tab" onclick="PalletCalc.switchTab('side')">Vista Lateral</button>
 <button class="tab" onclick="PalletCalc.switchTab('data')">Datos</button>
+<button class="tab" onclick="PalletCalc.switchTab('3d')">3D</button>
 </div>
 <!-- TOP VIEW -->
 <div class="tab-content active" id="palletTab-top">
@@ -289,12 +290,12 @@ body.dark #palletPanel input[type=number],body.dark #palletPanel select{border-c
 <div class="tab-content" id="palletTab-3d">
 <div class="canvas-panel">
 <div class="view-controls">
-<button class="view-btn" onclick="PalletCalc.set3DView('iso')">Isométrica</button>
-<button class="view-btn" onclick="PalletCalc.set3DView('front')">Frontal</button>
-<button class="view-btn" onclick="PalletCalc.set3DView('side')">Lateral</button>
-<button class="view-btn" onclick="PalletCalc.set3DView('top')">Superior</button>
-<button class="view-btn" onclick="PalletCalc.toggle3DStyle('solid')">Sólido</button>
-<button class="view-btn" onclick="PalletCalc.toggle3DStyle('blueprint')">Blueprint</button>
+<button class="view-btn active" data-view3d="iso" onclick="PalletCalc.set3DView('iso')">Isométrica</button>
+<button class="view-btn" data-view3d="front" onclick="PalletCalc.set3DView('front')">Frontal</button>
+<button class="view-btn" data-view3d="side" onclick="PalletCalc.set3DView('side')">Lateral</button>
+<button class="view-btn" data-view3d="top" onclick="PalletCalc.set3DView('top')">Superior</button>
+<button class="view-btn active" data-style3d="solid" onclick="PalletCalc.toggle3DStyle('solid')">Sólido</button>
+<button class="view-btn" data-style3d="blueprint" onclick="PalletCalc.toggle3DStyle('blueprint')">Blueprint</button>
 <div class="cam-switch" onclick="PalletCalc.toggleCamSwitch()">
 <span class="cam-switch-label active" id="palletCamLabelL">Ortho</span>
 <div class="cam-switch-track" id="palletCamTrack"><div class="cam-switch-thumb" id="palletCamThumb"></div></div>
@@ -323,6 +324,7 @@ body.dark #palletPanel input[type=number],body.dark #palletPanel select{border-c
 <!-- SIDE VIEW -->
 <div class="tab-content" id="palletTab-side">
 <div class="canvas-panel">
+<div class="view-controls" id="palletSideBtns"></div>
 
 <canvas id="palletSideCanvas" style="width:100%;max-width:560px"></canvas>
 <div style="text-align:center;margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
@@ -1775,7 +1777,7 @@ function applyPreset() {
 function switchTab(id) {
   if(id!=='3d')destroy3D();
   root.querySelectorAll('.tab').forEach((t,i) => {
-    const ids = ['top','3d','side','data'];
+    const ids = ['top','side','data','3d'];
     t.classList.toggle('active', ids[i] === id);
   });
   root.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
@@ -1793,6 +1795,8 @@ function switchTab(id) {
 }
 
 // ===== CALCULATION ENGINE =====
+let silentCalc = false;
+function notify(m) { if (!silentCalc) alert(m); }
 let warnState = null;
 function updateWarn() {
   const warn = document.getElementById('palletLayersWarning');
@@ -1810,7 +1814,7 @@ function patName(n) {
   if (LANG !== 'en') return n;
   return n.replace('Todas corto×largo','All short×long').replace('Todas largo×corto','All long×short').replace(/^Mixto:/,'Mixed:');
 }
-function calculate() {
+function runCalc() {
   // ALWAYS clean previous state
   destroy3D();
   calc = null;
@@ -1819,7 +1823,7 @@ function calculate() {
   let BW = +document.getElementById('palletBoxW').value;
   let BH = +document.getElementById('palletBoxH').value;
 
-  if (!BL || !BW || !BH) { alert(L('Ingresá las 3 dimensiones de la caja.','Enter all 3 box dimensions.')); return; }
+  if (!BL || !BW || !BH) { notify(L('Ingresá las 3 dimensiones de la caja.','Enter all 3 box dimensions.')); return; }
   if (BL > 1000) { BL = 1000; document.getElementById('palletBoxL').value = 1000; }
   if (BW > 1000) { BW = 1000; document.getElementById('palletBoxW').value = 1000; }
   if (BH > 1000) { BH = 1000; document.getElementById('palletBoxH').value = 1000; }
@@ -1831,12 +1835,13 @@ function calculate() {
   const maxH = (+document.getElementById('palletMaxHeight').value || +document.getElementById('palletMaxHeight').placeholder) * 10;
   const boxWt = +document.getElementById('palletBoxWeight').value || null;
 
-  if (!PL || !PW || !maxH) { alert(L('Ingresá las dimensiones del pallet y altura máxima.','Enter the pallet dimensions and maximum height.')); return; }
+  if (!PL || !PW || !maxH) { notify(L('Ingresá las dimensiones del pallet y altura máxima.','Enter the pallet dimensions and maximum height.')); return; }
 
   const longSide = Math.max(BL, BW);
   const shortSide = Math.min(BL, BW);
 
-  if (shortSide > PL && shortSide > PW) { alert(L('La caja no cabe en el pallet.','The box does not fit on the pallet.')); return; }
+  if (longSide > Math.max(PL, PW) || shortSide > Math.min(PL, PW)) { notify(L('La caja no puede ser mayor que el pallet.','The box cannot be larger than the pallet.')); return; }
+  if (BH > maxH - palletH) { notify(L('La caja no puede ser más alta que la altura útil del pallet.','The box cannot be taller than the usable pallet height.')); return; }
 
   // Build all possible patterns from scratch
   const patterns = [];
@@ -1852,7 +1857,7 @@ function calculate() {
   const mixed = findBestMixed(PL, PW, longSide, shortSide);
   if (mixed && mixed.count > 0) patterns.push(mixed);
 
-  if (patterns.length === 0) { alert(L('No caben cajas con estas dimensiones.','No boxes fit with these dimensions.')); return; }
+  if (patterns.length === 0) { notify(L('No caben cajas con estas dimensiones.','No boxes fit with these dimensions.')); return; }
 
   // Pattern selection depends on interlocking mode
   const forceInterlock = rotationEnabled;
@@ -1871,12 +1876,12 @@ function calculate() {
   }
 
   const availableH = maxH - palletH;
-  if (availableH <= 0) { alert(L('La tarima supera la altura máxima.','The pallet exceeds the maximum height.')); return; }
+  if (availableH <= 0) { notify(L('La tarima supera la altura máxima.','The pallet exceeds the maximum height.')); return; }
 
   const manualVal = +document.getElementById('palletManualLayers').value;
   const isManual = manualVal > 0;
   const layers = isManual ? manualVal : 1;
-  if (layers <= 0) { alert(L('No caben camas con esta altura.','No layers fit at this height.')); return; }
+  if (layers <= 0) { notify(L('No caben camas con esta altura.','No layers fit at this height.')); return; }
 
   const totalBoxes = best.count * layers;
   const boxesHeight = layers * BH;
@@ -1911,7 +1916,50 @@ function calculate() {
   };
 
   renderResults();
+  return true;
 }
+
+let realtimeOn = false, rtTimer = null;
+const RT_MAX_BOXES = 3000;
+function rtHint(msg) {
+  let h = root.querySelector('#palletRtHint');
+  if (!h) { const row = root.querySelector('.calc-row'); if (!row) return; h = document.createElement('div'); h.id = 'palletRtHint'; h.style.cssText = 'flex-basis:100%;font-size:11px;color:var(--accent-red,#e53e3e)'; row.appendChild(h); }
+  h.textContent = msg || ''; h.style.display = msg ? '' : 'none';
+}
+function rtTooHeavy() {
+  const g = id => { const e = document.getElementById(id); return +e.value || +e.placeholder || 0; };
+  let BL = +document.getElementById('palletBoxL').value, BW = +document.getElementById('palletBoxW').value, BH = +document.getElementById('palletBoxH').value;
+  if (!BL || !BW || !BH) return false;
+  if (measureType === 'interna') { BL += 10; BW += 10; BH += 10; }
+  const PL = g('palletL') * 10, PW = g('palletW') * 10, usable = (g('palletMaxHeight') - g('palletH')) * 10;
+  const lo = Math.min(BL, BW), hi = Math.max(BL, BW);
+  const a = Math.floor(PL / lo) * Math.floor(PW / hi), b = Math.floor(PL / hi) * Math.floor(PW / lo);
+  const layers = Math.max(1, Math.floor(usable / BH));
+  return Math.max(a, b) * layers > RT_MAX_BOXES;
+}
+function calculate(silent) {
+  if (silent === true && rtTooHeavy()) {
+    rtHint(L('Tiempo real en pausa: la caja es muy pequeña (demasiadas cajas). Usá "Calcular patrón".','Real time paused: box is too small (too many boxes). Use "Calculate pattern".'));
+    return;
+  }
+  if (silent === true) rtHint('');
+  silentCalc = silent === true;
+  const prev = calc, prevWarn = warnState;
+  let ok = false;
+  try { ok = runCalc(); } finally { silentCalc = false; }
+  if (!ok && silent === true && prev) {
+    // datos incompletos o inválidos mientras se escribe: se conserva el último resultado
+    calc = prev; warnState = prevWarn; updateWarn();
+    if (root.querySelector('#palletTab-3d.active')) switchTab('3d');
+  }
+}
+function rtTrigger() {
+  if (!realtimeOn) return;
+  clearTimeout(rtTimer);
+  rtTimer = setTimeout(function () { if (realtimeOn && root.style.display !== 'none') calculate(true); }, 350);
+}
+function setRealtime(on) { realtimeOn = !!on; clearTimeout(rtTimer); if (!on) rtHint(''); if (on) calculate(true); }
+const wrapRT = f => function () { const r = f.apply(this, arguments); rtTrigger(); return r; };
 
 function genUniform(cols, rows, cellW, cellH, PL, PW) {
   const boxes = [];
@@ -2046,6 +2094,7 @@ function renderResults() {
     ? `<button class="view-btn active" onclick="PalletCalc.setLayerView('A')">${L('Cama A (impares)','Layer A (odd)')}</button><button class="view-btn" onclick="PalletCalc.setLayerView('B')">${L('Cama B (pares)','Layer B (even)')}</button>`
     : `<button class="view-btn active">${L('Cama única','Single layer')}</button>`;
   document.getElementById('palletLayerBtns').innerHTML = lbHTML;
+  renderCotasBtns();
 
   // 3D slider
   document.getElementById('palletLayerSlider3D').max = calc.layers;
@@ -2093,16 +2142,35 @@ function renderResults() {
 
   // Redraw the currently active tab properly
   const activeTab = root.querySelector('.tab.active');
-  const activeId = activeTab ? ['top','3d','side','data'][
+  const activeId = activeTab ? ['top','side','data','3d'][
     [...root.querySelectorAll('.tab')].indexOf(activeTab)
   ] : 'top';
   switchTab(activeId);
 }
 
+// ===== COTAS (dimension labels) toggle =====
+let showCotas = true;
+function cotasBtnHTML() {
+  return `<button class="view-btn cotas-btn${showCotas ? ' active' : ''}" aria-pressed="${showCotas}" onclick="PalletCalc.toggleCotas()">${L('Cotas','Dimensions')}</button>`;
+}
+function renderCotasBtns() {
+  const h = cotasBtnHTML();
+  const t = document.getElementById('palletLayerBtns');
+  if (t) { t.querySelectorAll('.cotas-btn').forEach(b => b.remove()); t.insertAdjacentHTML('beforeend', h); }
+  const s = document.getElementById('palletSideBtns');
+  if (s) s.innerHTML = h;
+}
+function toggleCotas() {
+  showCotas = !showCotas;
+  renderCotasBtns();
+  if (!calc) return;
+  drawTopView(); drawSideView();
+}
+
 // ===== TOP VIEW =====
 function setLayerView(l) {
   currentLayerView = l;
-  root.querySelectorAll('#palletLayerBtns .view-btn').forEach((b,i) => {
+  root.querySelectorAll('#palletLayerBtns .view-btn:not(.cotas-btn)').forEach((b,i) => {
     b.classList.toggle('active', (l === 'A' && i === 0) || (l === 'B' && i === 1));
   });
   drawTopView();
@@ -2149,12 +2217,14 @@ function drawTopView() {
   rr(ctx, offX + 10, offY + 10, calc.PL * scale - 20, calc.PW * scale - 20, 3); ctx.fill();
 
   // Dimension labels
+  if (showCotas) {
   ctx.fillStyle = dimText;
   ctx.font = '11px ui-monospace, monospace';
   ctx.textAlign = 'center';
   ctx.fillText((calc.PL/10) + ' cm', offX + calc.PL * scale / 2, offY - 10);
   ctx.save(); ctx.translate(offX - 10, offY + calc.PW * scale / 2); ctx.rotate(-Math.PI / 2);
   ctx.fillText((calc.PW/10) + ' cm', 0, 0); ctx.restore();
+  }
 
   const boxes = currentLayerView === 'A' ? calc.layerA : calc.layerB;
   boxes.forEach((box, i) => {
@@ -2169,10 +2239,12 @@ function drawTopView() {
     ctx.fillStyle = isA ? boxAText : boxBText;
     ctx.font = '500 9px ui-monospace, monospace';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(i + 1, bx + bw / 2, by + bh / 2 - 5);
+    ctx.fillText(i + 1, bx + bw / 2, by + bh / 2 - (showCotas ? 5 : 0));
+    if (showCotas) {
     ctx.fillStyle = marginText;
     ctx.font = '8px ui-monospace, monospace';
     ctx.fillText(box.w + '×' + box.h, bx + bw / 2, by + bh / 2 + 6);
+    }
   });
 }
 
@@ -2210,7 +2282,7 @@ function drawSideView() {
   ctx.fillStyle = '#151610';
   ctx.font = '9px ui-monospace, monospace';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(L('Tarima ','Pallet ') + (calc.palletH/10) + ' cm', offX + drawW / 2, baseY - tarimaH / 2);
+  if (showCotas) ctx.fillText(L('Tarima ','Pallet ') + (calc.palletH/10) + ' cm', offX + drawW / 2, baseY - tarimaH / 2);
 
   // Boxes stacked on top of tarima
   const boxBaseY = baseY - tarimaH;
@@ -2238,12 +2310,12 @@ function drawSideView() {
   ctx.strokeStyle = 'rgba(239,95,95,0.5)'; ctx.lineWidth = 1; ctx.setLineDash([5, 3]);
   ctx.beginPath(); ctx.moveTo(offX - 8, maxY); ctx.lineTo(offX + drawW + 8, maxY); ctx.stroke(); ctx.setLineDash([]);
   ctx.fillStyle = light ? '#c03030' : '#ef5f5f'; ctx.font = '10px ui-monospace, monospace'; ctx.textAlign = 'right';
-  ctx.fillText(L('Máx ','Max ') + (calc.maxH/10) + ' cm', offX + drawW + 8, maxY - 5);
+  if (showCotas) ctx.fillText(L('Máx ','Max ') + (calc.maxH/10) + ' cm', offX + drawW + 8, maxY - 5);
 
   // Total height label
   ctx.fillStyle = getComputedStyle(root).getPropertyValue('--teal').trim(); ctx.textAlign = 'left';
   const topY = baseY - calc.totalHeight * scale;
-  ctx.fillText('↕ ' + (calc.totalHeight/10).toFixed(1) + ' cm', offX - 4, topY - 6);
+  if (showCotas) ctx.fillText('↕ ' + (calc.totalHeight/10).toFixed(1) + ' cm', offX - 4, topY - 6);
 }
 
 // ===== 3D VIEW (Three.js) =====
@@ -2426,6 +2498,7 @@ function init3D() {
   tRotX = -0.6; tRotY = 0.7; rotX3 = -0.6; rotY3 = 0.7;
   current3DView = 'iso';
   current3DStyle = 'solid';
+  sync3DButtons();
   threeInited = true;
   anim3();
 }
@@ -2494,9 +2567,15 @@ function anim3() {
   ren3.render(scene3, cam3);
 }
 
+function sync3DButtons() {
+  root.querySelectorAll('[data-view3d]').forEach(b => b.classList.toggle('active', b.dataset.view3d === current3DView));
+  root.querySelectorAll('[data-style3d]').forEach(b => b.classList.toggle('active', b.dataset.style3d === current3DStyle));
+}
+
 function set3DView(v) {
   if (!threeInited || !calc) return;
   current3DView = v;
+  sync3DButtons();
   tOrthoZoom = 1; orthoZoom = 1;
 
   const PW3 = calc.PL / 1000, PD3 = calc.PW / 1000, PH3 = calc.palletH / 1000;
@@ -2533,6 +2612,7 @@ function set3DView(v) {
 function toggle3DStyle(s) {
   if (!threeInited || !ren3) return;
   current3DStyle = s;
+  sync3DButtons();
   const boxMeshSet = new Set(box3D.map(b => b.mesh));
   box3D.forEach(b => {
     if (s === 'solid') {
@@ -2920,7 +3000,9 @@ function syncTheme(){currentTheme=document.body.classList.contains('dark')?'dark
 function relang(){if(!calc)return;updateWarn();renderResults();const tab=root.querySelector('.tab.active');if(tab&&tab.getAttribute('onclick')&&tab.getAttribute('onclick').indexOf("'top'")<0)tab.click();else{drawTopView();drawSideView();}}
 function open(){syncTheme();if(calc){const tab=root.querySelector('.tab.active');if(tab)tab.click();}}
 function close(){destroy3D();}
-window.PalletCalc={relang,calculate,setMeasure,setRotation,applyPreset,switchTab,setLayerView,set3DView,toggle3DStyle,toggleCamSwitch,update3DLayers,downloadViewSVG,downloadViewJPG,exportFullHTML,open,close,syncTheme,getResult:()=>calc,is3DActive:()=>threeInited};
+window.PalletCalc={relang,calculate,toggleCotas,setRealtime,setMeasure,setRotation,applyPreset,switchTab,setLayerView,set3DView,toggle3DStyle,toggleCamSwitch,update3DLayers,downloadViewSVG,downloadViewJPG,exportFullHTML,open,close,syncTheme,getResult:()=>calc,is3DActive:()=>threeInited};
+PalletCalc.setMeasure=wrapRT(setMeasure);PalletCalc.setRotation=wrapRT(setRotation);PalletCalc.applyPreset=wrapRT(applyPreset);
+root.addEventListener('input',e=>{if(e.target.matches('input[type=number]'))rtTrigger();});
 ['palletBoxL','palletBoxW','palletBoxH'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{if(measureType==='interna')setMeasure('interna');}));
 root.querySelectorAll('input[type="number"]').forEach(e=>e.addEventListener('keydown',evt=>{if(evt.key==='Enter'){evt.preventDefault();calculate();}}));
 window.addEventListener('resize',()=>{if(calc&&root.style.display!=='none'){if(root.querySelector('#palletTab-top.active'))drawTopView();if(root.querySelector('#palletTab-side.active'))drawSideView();}});
@@ -2938,7 +3020,7 @@ document.querySelector('.mode-bar').addEventListener('keydown',e=>{const tabs=[.
     'Largo':'Length','Ancho':'Width','Alto tarima':'Pallet height','Restricciones':'Constraints',
     'Altura máxima (cm)':'Maximum height (cm)','Número de camas':'Number of layers','cap':'layers',
     'Rotación entre camas':'Rotation between layers','Sin rotación':'No rotation',
-    'Peso por caja (kg) — opcional':'Weight per box (kg) — optional','Calcular patrón':'Calculate pattern',
+    'Peso por caja (kg) — opcional':'Weight per box (kg) — optional','Tiempo real':'Real time','Calcular patrón':'Calculate pattern',
     'Ingresá las dimensiones y presioná':'Enter the dimensions and press','para ver los resultados.':'to see the results.',
     'Vista Superior':'Top view','Vista 3D':'3D view','Vista Lateral':'Side view','Datos':'Data',
     'Orientación 1':'Orientation 1','Orientación 2':'Orientation 2',
