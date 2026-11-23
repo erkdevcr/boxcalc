@@ -81,6 +81,13 @@ body.dark{color-scheme:dark;--bg-app:#1a1c19;--bg-panel:#20231f;--bg-card:#26292
 .prods-wrap{margin-top:14px}.btn-prods{min-height:36px;padding:0 14px;border:1px solid var(--border);border-radius:999px;background:var(--bg-card);color:var(--text-primary);font-size:12px;font-weight:600;cursor:pointer}.btn-prods:hover{border-color:var(--accent-blue)}
 .prods-list{margin-top:10px;max-height:320px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:4px 8px}
 .prods-list td:first-child{white-space:nowrap;font-variant-numeric:tabular-nums;padding-right:14px}
+.kind-seg{display:inline-flex;padding:3px;border:1px solid var(--border);border-radius:999px;background:var(--bg-input)}
+.kind-btn{min-height:34px;padding:0 16px;border:0;border-radius:999px;background:transparent;color:var(--text-secondary);font-size:13px;font-weight:600;cursor:pointer}
+.kind-btn.active{background:var(--bg-card);color:var(--text-primary);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.bs-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.bs-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--bg-input);font-size:12px;font-weight:600;color:var(--text-secondary)}
+.bs-arrow{font-size:9px}.bs-up .bs-arrow{color:var(--accent-green)}.bs-down .bs-arrow{color:var(--accent-red)}
+.bs-brand{margin-left:6px;padding:2px 8px;border-radius:999px;background:var(--bg-input);font-size:11px;font-weight:600;color:var(--text-secondary);vertical-align:middle}
 /* Pallet workspace uses the host application's tokens and typography. */
 #palletPanel{--blue:var(--accent-blue);--blue-dim:var(--soft-accent);--teal:var(--accent-green);--orange:var(--accent);--yellow:var(--accent-yellow);--red:var(--accent-red);--green:var(--accent-green);--text:var(--text-primary);--text2:var(--text-secondary);--text3:var(--text-secondary);--card:var(--bg-card);--radius:10px;--pallet-outer:#b0ada8;--pallet-inner:#e8e6e0;--box-a-fill:#e6c187;--box-a-stroke:#9d7434;--box-a-text:#362810;--box-b-fill:#b09264;--box-b-stroke:#785b30;--box-b-text:#201a11;--dim-text:var(--text-secondary);--margin-text:#342714}
 body.dark #palletPanel{--pallet-outer:#797a72;--pallet-inner:#333b37;--dim-text:var(--text-secondary)}
@@ -375,6 +382,25 @@ body.dark #palletPanel input[type=number],body.dark #palletPanel select{border-c
       </div>
     </div>
     </div>
+    <div id="kindSection" style="display:none;margin-bottom:14px;">
+      <div class="kind-seg" role="group">
+        <button type="button" id="kindProd" class="kind-btn active" aria-pressed="true" onclick="setSearchKind('producto')">Por producto</button>
+        <button type="button" id="kindCaja" class="kind-btn" aria-pressed="false" onclick="setSearchKind('caja')">Por medida de caja</button>
+      </div>
+    </div>
+    <div id="boxSearchSection" style="display:none;">
+    <h2 id="labelBoxDims">Medida de la caja buscada (mm)</h2>
+    <div class="input-row">
+      <div class="input-group"><label id="bsLabelL" for="bsL">Largo</label><input type="number" id="bsL" placeholder="mm" min="1"></div>
+      <div class="input-group"><label id="bsLabelW" for="bsW">Ancho</label><input type="number" id="bsW" placeholder="mm" min="1"></div>
+      <div class="input-group"><label id="bsLabelH" for="bsH">Alto</label><input type="number" id="bsH" placeholder="mm" min="1"></div>
+      <div class="toggle-group">
+        <label for="bsAll" id="bsLabelAll">Todas las marcas</label>
+        <label class="toggle"><input type="checkbox" id="bsAll"><span class="slider"></span></label>
+      </div>
+      <button class="btn-search" onclick="buscarPorCaja()" id="btnBuscarCaja">Buscar parecidas</button>
+    </div>
+    </div>
     <div id="dimsSection" style="display:none;">
     <h2 id="labelDims">Dimensiones del producto (mm)</h2>
     <div class="input-row">
@@ -564,11 +590,25 @@ const PRODUCTOS_POR_CAJA = {"BioLand":{"113 RRP":[["PP088059","BCA 375ML GEL FIJ
 let CAJAS = [];
 
 // En "Buscar caja" las dimensiones solo aparecen cuando ya hay una marca elegida
+let SEARCH_KIND = 'producto';
+function setSearchKind(kind) {
+  SEARCH_KIND = kind;
+  document.getElementById('kindProd').classList.toggle('active', kind === 'producto');
+  document.getElementById('kindCaja').classList.toggle('active', kind === 'caja');
+  document.getElementById('kindProd').setAttribute('aria-pressed', kind === 'producto');
+  document.getElementById('kindCaja').setAttribute('aria-pressed', kind === 'caja');
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('summaryBar').style.display = 'none';
+  updateDimsVisibility(); updateNote();
+}
 function updateDimsVisibility() {
   var d = document.getElementById('dimsSection');
   if (!d) return;
-  var show = MODE === 'crear' || (MODE === 'buscar' && !!document.getElementById('marcaSelect').value);
-  d.style.display = show ? '' : 'none';
+  var brandOk = MODE === 'buscar' && !!document.getElementById('marcaSelect').value;
+  var byBox = brandOk && SEARCH_KIND === 'caja';
+  d.style.display = (MODE === 'crear' || (brandOk && !byBox)) ? '' : 'none';
+  var k = document.getElementById('kindSection'); if (k) k.style.display = brandOk ? '' : 'none';
+  var b = document.getElementById('boxSearchSection'); if (b) b.style.display = byBox ? '' : 'none';
 }
 
 function onMarcaChange() {
@@ -636,6 +676,64 @@ function calcSuggestion(caja, prodL, prodW, prodH, allowStack) {
     }
   }
   return bestMod;
+}
+
+function buscarPorCaja() {
+  document.getElementById('nuevaCajaResult').innerHTML = '';
+  document.getElementById('planoResult').innerHTML = '';
+  const marca = document.getElementById('marcaSelect').value;
+  if (!marca) { alert(T.alertSelectMarca); return; }
+  const a = parseInt(document.getElementById('bsL').value), b = parseInt(document.getElementById('bsW').value), h = parseInt(document.getElementById('bsH').value);
+  if (!a || !b || !h || a <= 0 || b <= 0 || h <= 0) { alert(T.alertDims); return; }
+  const qL = Math.max(a, b), qW = Math.min(a, b), qH = h;
+  const all = document.getElementById('bsAll').checked;
+  const nombres = {}; document.querySelectorAll('#marcaSelect option').forEach(o => { if (o.value) nombres[o.value] = o.textContent; });
+  const pool = [];
+  (all ? Object.keys(CAJAS_POR_MARCA) : [marca]).forEach(m => (CAJAS_POR_MARCA[m] || []).forEach(c => pool.push({ caja: c, marca: m })));
+  const ranked = pool.map(x => {
+    const bl = Math.max(x.caja.l, x.caja.w), bw = Math.min(x.caja.l, x.caja.w), bh = x.caja.h;
+    const d = [bl - qL, bw - qW, bh - qH];
+    return { caja: x.caja, marca: x.marca, bl, bw, bh, d, dist: Math.sqrt(d[0]*d[0] + d[1]*d[1] + d[2]*d[2]) };
+  }).sort((x, y) => x.dist - y.dist).slice(0, 8);
+
+  const summaryBar = document.getElementById('summaryBar');
+  summaryBar.style.display = 'flex';
+  summaryBar.innerHTML = `<div class="summary-item"><div class="summary-dot" style="background:#38a169"></div><div class="summary-text"><span class="summary-count">${ranked.length}</span> ${T.masCercanas}</div></div>`;
+  const container = document.getElementById('results');
+  if (!ranked.length) { container.innerHTML = `<div class="no-results"><div class="icon">&#128230;</div><h3>${T.noBoxes}</h3><p>${T.noBoxesDesc}</p></div>`; return; }
+
+  const axes = [T.largo, T.ancho, T.alto];
+  let html = `<div class="results-header"><h2>${T.cajasCercanas}</h2></div><div class="results-grid">`;
+  ranked.forEach(r => {
+    const chips = r.d.map((v, i) => {
+      const cls = v > 0 ? 'bs-up' : v < 0 ? 'bs-down' : 'bs-eq';
+      const arrow = v > 0 ? '&#9650;' : v < 0 ? '&#9660;' : '=';
+      return `<span class="bs-chip ${cls}"><span class="bs-arrow">${arrow}</span>${axes[i]} ${v > 0 ? '+' : ''}${v}mm</span>`;
+    }).join('');
+    const exact = r.dist === 0;
+    html += `<div class="card">
+      <div class="card-top">
+        <div>
+          <div class="card-name">${r.caja.id}${all ? ` <span class="bs-brand">${nombres[r.marca] || r.marca}</span>` : ''}</div>
+          <div class="card-dims">${r.bl} &times; ${r.bw} &times; ${r.bh} mm</div>
+        </div>
+        <div class="card-units">
+          <div class="number" style="${exact ? 'color:var(--accent-green)' : ''}">${exact ? '&#10003;' : r.dist.toFixed(1)}</div>
+          <div class="label">${exact ? T.exacta : T.distMm}</div>
+        </div>
+      </div>
+      <div class="bs-chips">${chips}</div>
+      ${productosHTML(r.caja, r.marca)}
+    </div>`;
+  });
+  container.innerHTML = html + '</div>';
+}
+
+function applyBoxSearchLang() {
+  const set = (id, t) => { const e = document.getElementById(id); if (e) e.textContent = t; };
+  set('kindProd', T.kindProd); set('kindCaja', T.kindCaja); set('labelBoxDims', T.boxDimsTitle);
+  set('bsLabelL', T.largo); set('bsLabelW', T.ancho); set('bsLabelH', T.alto);
+  set('bsLabelAll', T.todasMarcas); set('btnBuscarCaja', T.buscarParecidas);
 }
 
 function buscar() {
@@ -744,8 +842,8 @@ function buscar() {
   container.innerHTML = html;
 }
 
-function productosHTML(caja) {
-  const marca = document.getElementById('marcaSelect').value;
+function productosHTML(caja, brand) {
+  const marca = brand || document.getElementById('marcaSelect').value;
   const list = (PRODUCTOS_POR_CAJA[marca] || {})[caja.id];
   if (!list || !list.length) return '';
   const esc = t => String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
@@ -1133,7 +1231,7 @@ function updateNote() {
   var n = document.getElementById('noteInfo');
   if (!MODE || MODE === 'paletizado') { n.style.display = 'none'; return; }
   n.style.display = '';
-  n.innerHTML = MODE === 'crear' ? T.noteCrear : (MODE === 'plano' ? T.notePlano : T.noteBuscar);
+  n.innerHTML = MODE === 'crear' ? T.noteCrear : (MODE === 'plano' ? T.notePlano : (SEARCH_KIND === 'caja' ? T.noteCaja : T.noteBuscar));
 }
 function setMode(mode) {
   MODE = mode;
@@ -1613,6 +1711,8 @@ var STRINGS = {
     noBoxesDesc: 'Las cajas para esta marca ser\u00e1n agregadas pr\u00f3ximamente.',
     unidades: 'unidades', aprovechado: 'Aprovechado', desperdicio: 'Desperdicio',
     porPiso: 'por piso', piso: 'piso', pisos2: 'pisos',
+    kindProd: 'Por producto', kindCaja: 'Por medida de caja', boxDimsTitle: 'Medida de la caja buscada (mm)', todasMarcas: 'Todas las marcas', buscarParecidas: 'Buscar parecidas', masCercanas: 'cajas más cercanas', cajasCercanas: 'Cajas más cercanas a tu medida', exacta: 'coincide', distMm: 'mm de diferencia',
+    noteCaja: '<strong>Por medida de caja:</strong> ingresa la medida de la caja que buscas y se muestran las más cercanas, ordenadas por diferencia total en mm. Largo y ancho se comparan sin importar el orden. Las flechas indican si la caja existente es mayor (&#9650;) o menor (&#9660;) que lo buscado.',
     verProds: 'Ver productos que usan esta caja', ocultarProds: 'Ocultar productos', codigo: 'Código',
     clickDetalles: '&#9660; Click para ver detalles y diagramas',
     clickDetalles2: '&#9660; Click para ver detalles',
@@ -1664,6 +1764,8 @@ var STRINGS = {
     noBoxesDesc: 'Boxes for this brand will be added soon.',
     unidades: 'units', aprovechado: 'Used', desperdicio: 'Waste',
     porPiso: 'per layer', piso: 'layer', pisos2: 'layers',
+    kindProd: 'By product', kindCaja: 'By box size', boxDimsTitle: 'Box size you are looking for (mm)', todasMarcas: 'All brands', buscarParecidas: 'Find similar', masCercanas: 'closest boxes', cajasCercanas: 'Boxes closest to your size', exacta: 'match', distMm: 'mm difference',
+    noteCaja: '<strong>By box size:</strong> enter the size of the box you want and the closest ones are listed, sorted by total difference in mm. Length and width are compared regardless of order. Arrows show whether the existing box is larger (&#9650;) or smaller (&#9660;) than requested.',
     verProds: 'View products that use this box', ocultarProds: 'Hide products', codigo: 'Code',
     clickDetalles: '&#9660; Click to see details and diagrams',
     clickDetalles2: '&#9660; Click to see details',
@@ -1721,6 +1823,7 @@ function applyLang() {
   document.getElementById('planoLabelH').textContent = T.altoMm;
   document.getElementById('btnGenerar').textContent = T.generar;
   document.getElementById('langBtn').textContent = LANG === 'es' ? 'EN' : 'ES';
+  applyBoxSearchLang();
   updateThemeBtn();
 }
 
